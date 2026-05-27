@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>رسید اسکنر</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0D0D14; color: #EEF; font-family: 'Vazirmatn', Tahoma, sans-serif; min-height: 100vh; padding: 16px; }
+    .header { text-align: center; padding: 28px 0 32px; }
+    .header h1 { font-size: clamp(28px, 6vw, 42px); font-weight: 800; margin-bottom: 8px; background: linear-gradient(135deg, #fff, #A5B4FC, #6EE7B7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .header p { color: #555; font-size: 14px; }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .stat { border-radius: 14px; padding: 16px 18px; }
+    .stat-purple { background: rgba(99,102,241,.12); border: 1px solid rgba(99,102,241,.25); }
+    .stat-green { background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.25); }
+    .stat-label { color: #666; font-size: 11px; margin-bottom: 4px; }
+    .stat-value { font-size: 28px; font-weight: 800; }
+    .stat-purple .stat-value { color: #A5B4FC; }
+    .stat-green .stat-value { color: #6EE7B7; }
+    .upload-area { border: 2px dashed rgba(99,102,241,.4); border-radius: 18px; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; cursor: pointer; background: rgba(255,255,255,.02); margin-bottom: 16px; transition: border-color .2s; padding: 24px; }
+    .upload-area:hover { border-color: rgba(99,102,241,.7); }
+    .upload-area.dragover { border-color: #6366F1; background: rgba(99,102,241,.08); }
+    .upload-icon { font-size: 38px; }
+    .upload-btn { background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; border: none; border-radius: 10px; padding: 10px 28px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .upload-hint { color: #444; font-size: 12px; }
+    .loading { display: flex; align-items: center; gap: 10px; }
+    .spinner { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(99,102,241,.3); border-top-color: #6366F1; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { color: #A5B4FC; font-size: 14px; }
+    .preview-img { max-height: 100px; border-radius: 8px; opacity: .4; }
+    .error { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); border-radius: 10px; padding: 10px 16px; margin-bottom: 14px; color: #FCA5A5; font-size: 13px; }
+    .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .results-title { font-size: 16px; font-weight: 700; }
+    .export-btn { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; border-radius: 9px; padding: 9px 18px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .receipt-card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); border-radius: 14px; padding: 16px; margin-bottom: 10px; display: flex; gap: 12px; align-items: flex-start; border-right: 4px solid #6B7280; }
+    .receipt-info { flex: 1; }
+    .receipt-header { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
+    .receipt-vendor { font-size: 16px; font-weight: 800; }
+    .receipt-cat { border-radius: 20px; padding: 2px 10px; font-size: 12px; font-weight: 600; }
+    .receipt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .receipt-field { background: rgba(255,255,255,.04); border-radius: 7px; padding: 6px 10px; }
+    .field-label { color: #444; font-size: 10px; margin-bottom: 2px; }
+    .field-value { color: #EEF; font-size: 13px; font-weight: 600; }
+    .receipt-thumb { width: 52px; height: 66px; object-fit: cover; border-radius: 7px; opacity: .55; flex-shrink: 0; }
+    .empty { text-align: center; padding: 40px 0; color: #333; }
+    .empty-icon { font-size: 44px; opacity: .2; margin-bottom: 10px; }
+    .hidden { display: none; }
+    #stats { display: none; }
+    #results-section { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🧾 رسید اسکنر</h1>
+  <p>مخصوص self-employed ایرانی‌های کانادا</p>
+</div>
+
+<div class="stats" id="stats">
+  <div class="stat stat-purple">
+    <div class="stat-label">رسید ثبت شده</div>
+    <div class="stat-value" id="count">0</div>
+  </div>
+  <div class="stat stat-green">
+    <div class="stat-label">جمع کل هزینه</div>
+    <div class="stat-value" id="totalAmount">$0.00</div>
+  </div>
+</div>
+
+<div class="upload-area" id="uploadArea">
+  <div id="uploadContent">
+    <div style="text-align:center">
+      <div class="upload-icon">📷</div>
+      <button class="upload-btn" onclick="document.getElementById('fileInput').click()">آپلود رسید</button>
+      <div class="upload-hint" style="margin-top:8px">یا عکس را اینجا بکش</div>
+    </div>
+  </div>
+  <div id="loadingContent" class="hidden">
+    <img id="previewImg" class="preview-img" src="" alt="">
+    <div class="loading">
+      <div class="spinner"></div>
+      <span class="loading-text">در حال خواندن رسید...</span>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept="image/*" class="hidden">
+<div class="error hidden" id="errorBox"></div>
+
+<div class="empty" id="emptyState">
+  <div class="empty-icon">🧾</div>
+  <div style="font-size:14px">هنوز رسیدی اسکن نشده</div>
+</div>
+
+<div id="results-section">
+  <div class="results-header">
+    <span class="results-title">رسیدهای ثبت شده</span>
+    <button class="export-btn" onclick="exportCSV()">⬇️ دانلود اکسل</button>
+  </div>
+  <div id="receiptsList"></div>
+</div>
+
+<script>
+  const CAT_LABELS = { fuel:"⛽ بنزین", maintenance:"🔧 تعمیر", insurance:"🛡️ بیمه", phone:"📱 تلفن", meals:"🍔 غذا", carwash:"🚿 کارواش", parking:"🅿️ پارکینگ", other:"📦 سایر" };
+  const CAT_COLORS = { fuel:"#F97316", maintenance:"#3B82F6", insurance:"#8B5CF6", phone:"#06B6D4", meals:"#F59E0B", carwash:"#10B981", parking:"#EC4899", other:"#6B7280" };
+  let receipts = [];
+
+  document.getElementById("fileInput").addEventListener("change", e => { if (e.target.files[0]) processFile(e.target.files[0]); });
+  const ua = document.getElementById("uploadArea");
+  ua.addEventListener("dragover", e => { e.preventDefault(); ua.classList.add("dragover"); });
+  ua.addEventListener("dragleave", () => ua.classList.remove("dragover"));
+  ua.addEventListener("drop", e => { e.preventDefault(); ua.classList.remove("dragover"); if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); });
+
+  async function processFile(file) {
+    if (!file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const dataUrl = e.target.result;
+      showLoading(dataUrl);
+      try {
+        const res = await fetch("/api/scan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: dataUrl.split(",")[1], mimeType: file.type })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        addReceipt({ ...data, img: dataUrl });
+        hideLoading(); hideError();
+      } catch (err) {
+        hideLoading(); showError(err.message);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function showLoading(url) {
+    document.getElementById("uploadContent").classList.add("hidden");
+    document.getElementById("loadingContent").classList.remove("hidden");
+    document.getElementById("previewImg").src = url;
+  }
+  function hideLoading() {
+    document.getElementById("uploadContent").classList.remove("hidden");
+    document.getElementById("loadingContent").classList.add("hidden");
+    document.getElementById("fileInput").value = "";
+  }
+  function showError(msg) { const b = document.getElementById("errorBox"); b.textContent = "⚠️ " + msg; b.classList.remove("hidden"); }
+  function hideError() { document.getElementById("errorBox").classList.add("hidden"); }
+
+  function addReceipt(r) {
+    receipts.unshift({ id: Date.now(), ...r });
+    const total = receipts.reduce((s, r) => s + parseFloat(r.total || 0), 0);
+    document.getElementById("count").textContent = receipts.length;
+    document.getElementById("totalAmount").textContent = "$" + total.toFixed(2);
+    document.getElementById("stats").style.display = "grid";
+    document.getElementById("emptyState").style.display = "none";
+    document.getElementById("results-section").style.display = "block";
+    document.getElementById("receiptsList").innerHTML = receipts.map(r => {
+      const c = CAT_COLORS[r.category] || "#6B7280";
+      return `<div class="receipt-card" style="border-right-color:${c}">
+        <div class="receipt-info">
+          <div class="receipt-header">
+            <span class="receipt-vendor">${r.vendor}</span>
+            <span class="receipt-cat" style="background:${c}22;color:${c}">${CAT_LABELS[r.category]||r.category}</span>
+          </div>
+          <div class="receipt-grid">
+            <div class="receipt-field"><div class="field-label">تاریخ</div><div class="field-value">${r.date}</div></div>
+            <div class="receipt-field"><div class="field-label">مبلغ</div><div class="field-value">$${r.amount}</div></div>
+            <div class="receipt-field"><div class="field-label">مالیات</div><div class="field-value">$${r.tax}</div></div>
+            <div class="receipt-field"><div class="field-label">جمع کل</div><div class="field-value">$${r.total}</div></div>
+          </div>
+        </div>
+        <img src="${r.img}" class="receipt-thumb" alt="">
+      </div>`;
+    }).join("");
+  }
+
+  function exportCSV() {
+    const rows = [["تاریخ","فروشنده","مبلغ","مالیات","جمع کل","دسته‌بندی T2125"], ...receipts.map(r => [r.date,r.vendor,r.amount,r.tax,r.total,CAT_LABELS[r.category]||r.category])];
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob(["\uFEFF"+rows.map(r=>r.map(c=>`"${c}"`).join(",")).join("\n")], {type:"text/csv;charset=utf-8"}));
+    a.download = "receipts.csv"; a.click();
+  }
+</script>
+</body>
+</html>

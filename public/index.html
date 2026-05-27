@@ -8,22 +8,14 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0D0D14; color: #EEF; font-family: 'Vazirmatn', Tahoma, sans-serif; min-height: 100vh; }
-    
-    /* Nav */
     .nav { display: flex; gap: 0; background: rgba(255,255,255,.03); border-bottom: 1px solid rgba(255,255,255,.06); overflow-x: auto; }
     .nav-btn { flex: 1; min-width: 80px; padding: 14px 8px; background: none; border: none; color: #555; font-family: inherit; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s; white-space: nowrap; }
     .nav-btn.active { color: #A5B4FC; border-bottom-color: #6366F1; }
-
-    /* Layout */
     .page { display: none; padding: 16px; max-width: 860px; margin: 0 auto; }
     .page.active { display: block; }
-
-    /* Header */
     .header { text-align: center; padding: 24px 0 28px; }
     .header h1 { font-size: clamp(24px,5vw,38px); font-weight: 800; margin-bottom: 6px; background: linear-gradient(135deg,#fff,#A5B4FC,#6EE7B7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .header p { color: #555; font-size: 13px; }
-
-    /* Stats grid */
     .stats { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 12px; margin-bottom: 20px; }
     .stat { border-radius: 14px; padding: 16px 18px; }
     .stat-purple { background: rgba(99,102,241,.12); border: 1px solid rgba(99,102,241,.25); }
@@ -36,19 +28,11 @@
     .stat-green .stat-value { color: #6EE7B7; }
     .stat-red .stat-value { color: #FCA5A5; }
     .stat-yellow .stat-value { color: #FCD34D; }
-
-    /* Upload */
-    .upload-area { border: 2px dashed rgba(99,102,241,.4); border-radius: 18px; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; background: rgba(255,255,255,.02); margin-bottom: 16px; padding: 20px; transition: border-color .2s; }
-    .upload-area:hover { border-color: rgba(99,102,241,.7); }
-
-    /* Buttons */
     .btn { border: none; border-radius: 10px; padding: 10px 20px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
     .btn-primary { background: linear-gradient(135deg,#6366F1,#8B5CF6); color: white; }
     .btn-green { background: linear-gradient(135deg,#10B981,#059669); color: white; }
     .btn-red { background: linear-gradient(135deg,#EF4444,#DC2626); color: white; }
     .btn-outline { background: none; border: 1px solid rgba(255,255,255,.15); color: #EEF; }
-
-    /* Form */
     .form-card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
     .form-title { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -59,60 +43,32 @@
     .form-input:focus { outline: none; border-color: rgba(99,102,241,.5); }
     select.form-input option { background: #1a1a2e; }
     .form-actions { display: flex; gap: 10px; margin-top: 16px; }
-
-    /* Cards */
     .card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); border-radius: 14px; padding: 16px; margin-bottom: 10px; display: flex; gap: 12px; align-items: flex-start; border-right: 4px solid #6B7280; }
     .card-info { flex: 1; }
     .card-header { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
     .card-title { font-size: 15px; font-weight: 800; }
-    .card-badge { border-radius: 20px; padding: 2px 10px; font-size: 12px; font-weight: 600; }
+    .card-badge { border-radius: 20px; padding: 2px 10px; font-size: 12px; font-weight: 600; background: rgba(255,255,255,.05); color: #888; }
     .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .card-field { background: rgba(255,255,255,.04); border-radius: 7px; padding: 6px 10px; }
     .field-label { color: #444; font-size: 10px; margin-bottom: 2px; }
     .field-value { color: #EEF; font-size: 13px; font-weight: 600; }
-    .card-thumb { width: 52px; height: 66px; object-fit: cover; border-radius: 7px; opacity: .55; flex-shrink: 0; }
-
-    /* Section header */
     .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
     .section-title { font-size: 16px; font-weight: 700; }
-
-    /* Export wrapper */
-    .export-wrapper { position: relative; }
-    .export-menu { display: none; position: absolute; left: 0; top: 110%; background: #1a1a2e; border: 1px solid rgba(255,255,255,.1); border-radius: 10px; overflow: hidden; z-index: 10; min-width: 150px; }
-    .export-menu button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; color: #EEF; cursor: pointer; text-align: right; font-family: inherit; font-size: 13px; }
-    .export-menu button:hover { background: rgba(255,255,255,.05); }
-
-    /* Error / Loading */
-    .error { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); border-radius: 10px; padding: 10px 16px; margin-bottom: 14px; color: #FCA5A5; font-size: 13px; }
-    .spinner { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(99,102,241,.3); border-top-color: #6366F1; animation: spin .7s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Empty */
     .empty { text-align: center; padding: 40px 0; color: #333; }
-
-    /* Month filter */
     .month-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
     .month-btn { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 20px; padding: 5px 14px; font-size: 12px; color: #888; cursor: pointer; font-family: inherit; }
     .month-btn.active { background: rgba(99,102,241,.2); border-color: rgba(99,102,241,.4); color: #A5B4FC; }
-
-    .hidden { display: none; }
-
-    /* Report */
-    .report-section { margin-bottom: 24px; }
-    .report-title { font-size: 14px; font-weight: 700; color: #888; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,.06); padding-bottom: 8px; }
     .report-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
-    .report-row:last-child { border-bottom: none; }
     .report-label { font-size: 14px; color: #CCC; }
     .report-value { font-size: 14px; font-weight: 700; }
     .report-total { background: rgba(99,102,241,.1); border-radius: 10px; padding: 14px 16px; display: flex; justify-content: space-between; margin-top: 12px; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
 
-<!-- Nav -->
 <nav class="nav">
   <button class="nav-btn active" onclick="showPage('dashboard')">📊 داشبورد</button>
-  <button class="nav-btn" onclick="showPage('receipts')">📸 رسیدها</button>
   <button class="nav-btn" onclick="showPage('expenses')">💸 هزینه دستی</button>
   <button class="nav-btn" onclick="showPage('income')">💰 درآمد</button>
   <button class="nav-btn" onclick="showPage('report')">📋 گزارش</button>
@@ -120,67 +76,14 @@
 
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
-  <div class="header">
-    <h1>💼 پارسیفای</h1>
-    <p>مدیریت مالی ساده برای ایرانی‌های کانادا</p>
+  <div class="header"><h1>💼 پارسیفای</h1><p>مدیریت مالی ساده</p></div>
+  <div class="stats">
+    <div class="stat stat-green"><div class="stat-label">درآمد این ماه</div><div class="stat-value" id="dash-income">$0</div></div>
+    <div class="stat stat-red"><div class="stat-label">هزینه این ماه</div><div class="stat-value" id="dash-expense">$0</div></div>
+    <div class="stat stat-purple"><div class="stat-label">مانده</div><div class="stat-value" id="dash-balance">$0</div></div>
+    <div class="stat stat-yellow"><div class="stat-label">تعداد تراکنش</div><div class="stat-value" id="dash-count">0</div></div>
   </div>
-
-  <div class="stats" id="dash-stats">
-    <div class="stat stat-green">
-      <div class="stat-label">درآمد این ماه</div>
-      <div class="stat-value" id="dash-income">$0</div>
-    </div>
-    <div class="stat stat-red">
-      <div class="stat-label">هزینه این ماه</div>
-      <div class="stat-value" id="dash-expense">$0</div>
-    </div>
-    <div class="stat stat-purple">
-      <div class="stat-label">مانده</div>
-      <div class="stat-value" id="dash-balance">$0</div>
-    </div>
-    <div class="stat stat-yellow">
-      <div class="stat-label">رسید ثبت شده</div>
-      <div class="stat-value" id="dash-count">0</div>
-    </div>
-  </div>
-
-  <div class="form-card">
-    <div class="form-title">📅 ماه جاری: <span id="current-month"></span></div>
-    <div id="dash-breakdown"></div>
-  </div>
-</div>
-
-<!-- RECEIPTS -->
-<div id="page-receipts" class="page">
-  <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-    <div id="uploadContent" style="text-align:center">
-      <div style="font-size:36px;margin-bottom:10px">📷</div>
-      <button class="btn btn-primary">آپلود رسید</button>
-      <div style="color:#444;font-size:12px;margin-top:8px">یا عکس را اینجا بکش</div>
-    </div>
-    <div id="loadingContent" class="hidden" style="text-align:center">
-      <div style="display:flex;align-items:center;gap:10px;justify-content:center">
-        <div class="spinner"></div>
-        <span style="color:#A5B4FC;font-size:14px">در حال خواندن رسید...</span>
-      </div>
-    </div>
-  </div>
-  <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="processFile(event.target.files[0])">
-  <div class="error hidden" id="errorBox"></div>
-
-  <div id="receipts-section">
-    <div class="section-header">
-      <span class="section-title">رسیدهای ثبت شده</span>
-      <div class="export-wrapper">
-        <button class="btn btn-green" onclick="toggleExportMenu()">⬇️ دانلود ▾</button>
-        <div class="export-menu" id="exportMenu">
-          <button onclick="exportCSV('fa')">🇮🇷 فارسی</button>
-          <button onclick="exportCSV('en')">🇨🇦 English</button>
-        </div>
-      </div>
-    </div>
-    <div id="receiptsList"></div>
-  </div>
+  <div class="form-card"><div class="form-title">📅 ماه جاری: <span id="current-month"></span></div><div id="dash-breakdown"></div></div>
 </div>
 
 <!-- MANUAL EXPENSE -->
@@ -188,54 +91,14 @@
   <div class="form-card">
     <div class="form-title">➕ افزودن هزینه دستی</div>
     <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">عنوان</label>
-        <input class="form-input" id="exp-title" placeholder="مثلاً: اجاره خانه">
-      </div>
-      <div class="form-group">
-        <label class="form-label">مبلغ ($)</label>
-        <input class="form-input" id="exp-amount" type="number" placeholder="0.00">
-      </div>
-      <div class="form-group">
-        <label class="form-label">تاریخ</label>
-        <input class="form-input" id="exp-date" type="date">
-      </div>
-      <div class="form-group">
-        <label class="form-label">دسته‌بندی</label>
-        <select class="form-input" id="exp-category">
-          <option value="rent">🏠 اجاره</option>
-          <option value="food">🍔 غذا</option>
-          <option value="fuel">⛽ بنزین</option>
-          <option value="phone">📱 تلفن</option>
-          <option value="insurance">🛡️ بیمه</option>
-          <option value="maintenance">🔧 تعمیر</option>
-          <option value="carwash">🚿 کارواش</option>
-          <option value="parking">🅿️ پارکینگ</option>
-          <option value="entertainment">🎬 سرگرمی</option>
-          <option value="clothing">👕 پوشاک</option>
-          <option value="health">🏥 سلامت</option>
-          <option value="education">📚 آموزش</option>
-          <option value="other">📦 سایر</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">نوع</label>
-        <select class="form-input" id="exp-type">
-          <option value="personal">🏠 شخصی</option>
-          <option value="business">💼 کاری (T2125)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">توضیحات (اختیاری)</label>
-        <input class="form-input" id="exp-note" placeholder="...">
-      </div>
+      <div class="form-group"><label class="form-label">عنوان</label><input class="form-input" id="exp-title" placeholder="مثلاً: اجاره خانه"></div>
+      <div class="form-group"><label class="form-label">مبلغ ($)</label><input class="form-input" id="exp-amount" type="number" placeholder="0.00"></div>
+      <div class="form-group"><label class="form-label">تاریخ</label><input class="form-input" id="exp-date" type="date"></div>
+      <div class="form-group"><label class="form-label">دسته‌بندی</label><select class="form-input" id="exp-category"><option value="rent">🏠 اجاره</option><option value="food">🍔 غذا</option><option value="fuel">⛽ بنزین</option><option value="phone">📱 تلفن</option><option value="insurance">🛡️ بیمه</option><option value="other">📦 سایر</option></select></div>
+      <div class="form-group full"><label class="form-label">توضیحات (اختیاری)</label><input class="form-input" id="exp-note" placeholder="..."></div>
     </div>
-    <div class="form-actions">
-      <button class="btn btn-primary" onclick="addManualExpense()">➕ ثبت هزینه</button>
-      <button class="btn btn-outline" onclick="clearExpenseForm()">پاک کردن</button>
-    </div>
+    <div class="form-actions"><button class="btn btn-primary" onclick="addManualExpense()">➕ ثبت هزینه</button><button class="btn btn-outline" onclick="clearExpenseForm()">پاک کردن</button></div>
   </div>
-
   <div id="manual-expenses-list"></div>
 </div>
 
@@ -244,192 +107,83 @@
   <div class="form-card">
     <div class="form-title">💰 افزودن درآمد</div>
     <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">منبع درآمد</label>
-        <input class="form-input" id="inc-title" placeholder="مثلاً: حقوق، Uber، فریلنس">
-      </div>
-      <div class="form-group">
-        <label class="form-label">مبلغ ($)</label>
-        <input class="form-input" id="inc-amount" type="number" placeholder="0.00">
-      </div>
-      <div class="form-group">
-        <label class="form-label">تاریخ</label>
-        <input class="form-input" id="inc-date" type="date">
-      </div>
-      <div class="form-group">
-        <label class="form-label">نوع</label>
-        <select class="form-input" id="inc-type">
-          <option value="employment">👔 حقوق</option>
-          <option value="selfemployed">🚗 Self-employed</option>
-          <option value="rental">🏠 اجاره</option>
-          <option value="other">📦 سایر</option>
-        </select>
-      </div>
-      <div class="form-group full">
-        <label class="form-label">توضیحات (اختیاری)</label>
-        <input class="form-input" id="inc-note" placeholder="...">
-      </div>
+      <div class="form-group"><label class="form-label">منبع درآمد</label><input class="form-input" id="inc-title" placeholder="مثلاً: حقوق"></div>
+      <div class="form-group"><label class="form-label">مبلغ ($)</label><input class="form-input" id="inc-amount" type="number" placeholder="0.00"></div>
+      <div class="form-group"><label class="form-label">تاریخ</label><input class="form-input" id="inc-date" type="date"></div>
+      <div class="form-group full"><label class="form-label">توضیحات</label><input class="form-input" id="inc-note" placeholder="..."></div>
     </div>
-    <div class="form-actions">
-      <button class="btn btn-green" onclick="addIncome()">➕ ثبت درآمد</button>
-      <button class="btn btn-outline" onclick="clearIncomeForm()">پاک کردن</button>
-    </div>
+    <div class="form-actions"><button class="btn btn-green" onclick="addIncome()">➕ ثبت درآمد</button><button class="btn btn-outline" onclick="clearIncomeForm()">پاک کردن</button></div>
   </div>
-
   <div id="income-list"></div>
 </div>
 
 <!-- REPORT -->
 <div id="page-report" class="page">
-  <div class="header">
-    <h1>📋 گزارش مالی</h1>
-    <p>خلاصه برای tax و بودجه</p>
-  </div>
-
+  <div class="header"><h1>📋 گزارش مالی</h1><p>خلاصه برای بودجه</p></div>
   <div class="month-filter" id="month-filter"></div>
-
   <div id="report-content"></div>
 </div>
 
 <script>
-const CAT_LABELS = { fuel:"⛽ بنزین", maintenance:"🔧 تعمیر", insurance:"🛡️ بیمه", phone:"📱 تلفن", meals:"🍔 غذا", carwash:"🚿 کارواش", parking:"🅿️ پارکینگ", other:"📦 سایر", rent:"🏠 اجاره", food:"🍔 غذا", entertainment:"🎬 سرگرمی", clothing:"👕 پوشاک", health:"🏥 سلامت", education:"📚 آموزش" };
-const CAT_COLORS = { fuel:"#F97316", maintenance:"#3B82F6", insurance:"#8B5CF6", phone:"#06B6D4", meals:"#F59E0B", carwash:"#10B981", parking:"#EC4899", other:"#6B7280", rent:"#8B5CF6", food:"#F59E0B", entertainment:"#EC4899", clothing:"#06B6D4", health:"#10B981", education:"#3B82F6" };
-const T2125 = { fuel:"Fuel", maintenance:"Maintenance & Repairs", insurance:"Insurance", phone:"Telephone & Utilities", meals:"Meals & Entertainment (50%)", carwash:"Other Expenses", parking:"Parking", other:"Other Expenses" };
-
-let receipts = JSON.parse(localStorage.getItem('receipts') || '[]');
+// داده‌ها
 let manualExpenses = JSON.parse(localStorage.getItem('manualExpenses') || '[]');
 let incomes = JSON.parse(localStorage.getItem('incomes') || '[]');
 
+const CAT_LABELS = { fuel:"⛽ بنزین", insurance:"🛡️ بیمه", phone:"📱 تلفن", rent:"🏠 اجاره", food:"🍔 غذا", other:"📦 سایر" };
+const CAT_COLORS = { fuel:"#F97316", insurance:"#8B5CF6", phone:"#06B6D4", rent:"#8B5CF6", food:"#F59E0B", other:"#6B7280" };
+
 function save() {
-  localStorage.setItem('receipts', JSON.stringify(receipts));
   localStorage.setItem('manualExpenses', JSON.stringify(manualExpenses));
   localStorage.setItem('incomes', JSON.stringify(incomes));
 }
 
-// Nav
+// نویگیشن
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
   event.target.classList.add('active');
   if (name === 'dashboard') renderDashboard();
-  if (name === 'receipts') renderReceipts();
   if (name === 'expenses') renderManualExpenses();
   if (name === 'income') renderIncomes();
   if (name === 'report') renderReport();
 }
 
-// Current month
+// تاریخ امروز
 const now = new Date();
 document.getElementById('current-month').textContent = now.toLocaleDateString('fa-IR', { year: 'numeric', month: 'long' });
 document.getElementById('exp-date').value = now.toISOString().split('T')[0];
 document.getElementById('inc-date').value = now.toISOString().split('T')[0];
 
-// Dashboard
+// داشبورد
 function renderDashboard() {
   const m = now.getMonth(), y = now.getFullYear();
-  const monthReceipts = receipts.filter(r => { const d = new Date(r.date); return d.getMonth()===m && d.getFullYear()===y; });
   const monthExpenses = manualExpenses.filter(r => { const d = new Date(r.date); return d.getMonth()===m && d.getFullYear()===y; });
   const monthIncome = incomes.filter(r => { const d = new Date(r.date); return d.getMonth()===m && d.getFullYear()===y; });
-
   const totalIncome = monthIncome.reduce((s,r) => s + parseFloat(r.amount||0), 0);
-  const totalExpense = [...monthReceipts, ...monthExpenses].reduce((s,r) => s + parseFloat(r.total||r.amount||0), 0);
+  const totalExpense = monthExpenses.reduce((s,r) => s + parseFloat(r.amount||0), 0);
   const balance = totalIncome - totalExpense;
-
   document.getElementById('dash-income').textContent = '$' + totalIncome.toFixed(0);
   document.getElementById('dash-expense').textContent = '$' + totalExpense.toFixed(0);
   document.getElementById('dash-balance').textContent = (balance >= 0 ? '+' : '') + '$' + balance.toFixed(0);
-  document.getElementById('dash-count').textContent = monthReceipts.length + monthExpenses.length;
+  document.getElementById('dash-count').textContent = monthExpenses.length + monthIncome.length;
 
-  // Breakdown by category
   const cats = {};
-  [...monthReceipts, ...monthExpenses].forEach(r => {
-    const c = r.category || 'other';
-    cats[c] = (cats[c] || 0) + parseFloat(r.total || r.amount || 0);
-  });
-
+  monthExpenses.forEach(r => { const c = r.category || 'other'; cats[c] = (cats[c] || 0) + parseFloat(r.amount || 0); });
   const breakdown = document.getElementById('dash-breakdown');
-  if (Object.keys(cats).length === 0) {
-    breakdown.innerHTML = '<div style="color:#444;font-size:13px;text-align:center;padding:10px">هنوز هزینه‌ای ثبت نشده</div>';
-    return;
-  }
-  breakdown.innerHTML = Object.entries(cats).sort((a,b) => b[1]-a[1]).map(([cat, amt]) => `
-    <div class="report-row">
-      <span class="report-label">${CAT_LABELS[cat] || cat}</span>
-      <span class="report-value" style="color:${CAT_COLORS[cat]||'#EEF'}">$${amt.toFixed(2)}</span>
-    </div>
-  `).join('');
+  if (Object.keys(cats).length === 0) { breakdown.innerHTML = '<div style="color:#444;font-size:13px;text-align:center;padding:10px">هزینه‌ای ثبت نشده</div>'; return; }
+  breakdown.innerHTML = Object.entries(cats).sort((a,b) => b[1]-a[1]).map(([cat, amt]) => `<div class="report-row"><span class="report-label">${CAT_LABELS[cat] || cat}</span><span class="report-value" style="color:${CAT_COLORS[cat]||'#EEF'}">$${amt.toFixed(2)}</span></div>`).join('');
 }
 
-// Receipt scan
-async function processFile(file) {
-  if (!file?.type.startsWith('image/')) return;
-  document.getElementById('uploadContent').classList.add('hidden');
-  document.getElementById('loadingContent').classList.remove('hidden');
-
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    const dataUrl = e.target.result;
-    try {
-      const res = await fetch('/api/scan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: dataUrl.split(',')[1], mimeType: file.type })
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      receipts.unshift({ id: Date.now(), ...data, img: dataUrl, source: 'scan' });
-      save();
-      renderReceipts();
-      renderDashboard();
-      document.getElementById('errorBox').classList.add('hidden');
-    } catch(err) {
-      const box = document.getElementById('errorBox');
-      box.textContent = '⚠️ ' + err.message;
-      box.classList.remove('hidden');
-    } finally {
-      document.getElementById('uploadContent').classList.remove('hidden');
-      document.getElementById('loadingContent').classList.add('hidden');
-      document.getElementById('fileInput').value = '';
-    }
-  };
-  reader.readAsDataURL(file);
-}
-
-// Render receipts
-function renderReceipts() {
-  const list = document.getElementById('receiptsList');
-  if (receipts.length === 0) { list.innerHTML = '<div class="empty"><div style="font-size:40px;opacity:.2;margin-bottom:10px">🧾</div><div style="font-size:14px">هنوز رسیدی اسکن نشده</div></div>'; return; }
-  list.innerHTML = receipts.map(r => {
-    const c = CAT_COLORS[r.category] || '#6B7280';
-    return `<div class="card" style="border-right-color:${c}">
-      <div class="card-info">
-        <div class="card-header">
-          <span class="card-title">${r.vendor || '—'}</span>
-          <span class="card-badge" style="background:${c}22;color:${c}">${CAT_LABELS[r.category]||r.category}</span>
-        </div>
-        <div class="card-grid">
-          <div class="card-field"><div class="field-label">تاریخ</div><div class="field-value">${r.date}</div></div>
-          <div class="card-field"><div class="field-label">مبلغ</div><div class="field-value">$${r.amount}</div></div>
-          <div class="card-field"><div class="field-label">مالیات</div><div class="field-value">$${r.tax}</div></div>
-          <div class="card-field"><div class="field-label">جمع کل</div><div class="field-value">$${r.total}</div></div>
-        </div>
-      </div>
-      ${r.img ? `<img src="${r.img}" class="card-thumb" alt="">` : ''}
-    </div>`;
-  }).join('');
-}
-
-// Manual expense
+// هزینه دستی
 function addManualExpense() {
   const title = document.getElementById('exp-title').value.trim();
   const amount = document.getElementById('exp-amount').value;
   const date = document.getElementById('exp-date').value;
   const category = document.getElementById('exp-category').value;
-  const type = document.getElementById('exp-type').value;
   const note = document.getElementById('exp-note').value;
   if (!title || !amount || !date) { alert('لطفاً عنوان، مبلغ و تاریخ را وارد کنید'); return; }
-  manualExpenses.unshift({ id: Date.now(), title, amount: parseFloat(amount).toFixed(2), date, category, type, note, source: 'manual' });
+  manualExpenses.unshift({ id: Date.now(), title, amount: parseFloat(amount).toFixed(2), date, category, note });
   save();
   renderManualExpenses();
   renderDashboard();
@@ -449,36 +203,18 @@ function deleteExpense(id) {
 
 function renderManualExpenses() {
   const list = document.getElementById('manual-expenses-list');
-  if (manualExpenses.length === 0) { list.innerHTML = '<div class="empty"><div style="font-size:40px;opacity:.2;margin-bottom:10px">💸</div><div style="font-size:14px">هنوز هزینه‌ای ثبت نشده</div></div>'; return; }
-  list.innerHTML = manualExpenses.map(e => {
-    const c = CAT_COLORS[e.category] || '#6B7280';
-    return `<div class="card" style="border-right-color:${c}">
-      <div class="card-info">
-        <div class="card-header">
-          <span class="card-title">${e.title}</span>
-          <span class="card-badge" style="background:${c}22;color:${c}">${CAT_LABELS[e.category]||e.category}</span>
-          <span class="card-badge" style="background:rgba(255,255,255,.05);color:#888">${e.type==='business'?'💼 کاری':'🏠 شخصی'}</span>
-        </div>
-        <div class="card-grid">
-          <div class="card-field"><div class="field-label">تاریخ</div><div class="field-value">${e.date}</div></div>
-          <div class="card-field"><div class="field-label">مبلغ</div><div class="field-value">$${e.amount}</div></div>
-          ${e.note ? `<div class="card-field" style="grid-column:1/-1"><div class="field-label">توضیحات</div><div class="field-value">${e.note}</div></div>` : ''}
-        </div>
-      </div>
-      <button onclick="deleteExpense(${e.id})" style="background:none;border:none;color:#EF4444;cursor:pointer;font-size:18px;flex-shrink:0">🗑</button>
-    </div>`;
-  }).join('');
+  if (manualExpenses.length === 0) { list.innerHTML = '<div class="empty">هزینه‌ای ثبت نشده</div>'; return; }
+  list.innerHTML = manualExpenses.map(e => `<div class="card" style="border-right-color:${CAT_COLORS[e.category]||'#6B7280'}"><div class="card-info"><div class="card-header"><span class="card-title">${e.title}</span><span class="card-badge">${CAT_LABELS[e.category]||e.category}</span></div><div class="card-grid"><div class="card-field"><div class="field-label">تاریخ</div><div class="field-value">${e.date}</div></div><div class="card-field"><div class="field-label">مبلغ</div><div class="field-value">$${e.amount}</div></div>${e.note ? `<div class="card-field full"><div class="field-label">توضیحات</div><div class="field-value">${e.note}</div></div>` : ''}</div></div><button onclick="deleteExpense(${e.id})" style="background:none;border:none;color:#EF4444;cursor:pointer;">🗑</button></div>`).join('');
 }
 
-// Income
+// درآمد
 function addIncome() {
   const title = document.getElementById('inc-title').value.trim();
   const amount = document.getElementById('inc-amount').value;
   const date = document.getElementById('inc-date').value;
-  const type = document.getElementById('inc-type').value;
   const note = document.getElementById('inc-note').value;
   if (!title || !amount || !date) { alert('لطفاً منبع، مبلغ و تاریخ را وارد کنید'); return; }
-  incomes.unshift({ id: Date.now(), title, amount: parseFloat(amount).toFixed(2), date, type, note });
+  incomes.unshift({ id: Date.now(), title, amount: parseFloat(amount).toFixed(2), date, note });
   save();
   renderIncomes();
   renderDashboard();
@@ -498,53 +234,38 @@ function deleteIncome(id) {
 
 function renderIncomes() {
   const list = document.getElementById('income-list');
-  if (incomes.length === 0) { list.innerHTML = '<div class="empty"><div style="font-size:40px;opacity:.2;margin-bottom:10px">💰</div><div style="font-size:14px">هنوز درآمدی ثبت نشده</div></div>'; return; }
-  list.innerHTML = incomes.map(e => `
-    <div class="card" style="border-right-color:#10B981">
-      <div class="card-info">
-        <div class="card-header">
-          <span class="card-title">${e.title}</span>
-          <span class="card-badge" style="background:rgba(16,185,129,.15);color:#6EE7B7">💰 درآمد</span>
-        </div>
-        <div class="card-grid">
-          <div class="card-field"><div class="field-label">تاریخ</div><div class="field-value">${e.date}</div></div>
-          <div class="card-field"><div class="field-label">مبلغ</div><div class="field-value" style="color:#6EE7B7">$${e.amount}</div></div>
-          ${e.note ? `<div class="card-field" style="grid-column:1/-1"><div class="field-label">توضیحات</div><div class="field-value">${e.note}</div></div>` : ''}
-        </div>
-      </div>
-      <button onclick="deleteIncome(${e.id})" style="background:none;border:none;color:#EF4444;cursor:pointer;font-size:18px;flex-shrink:0">🗑</button>
-    </div>
-  `).join('');
+  if (incomes.length === 0) { list.innerHTML = '<div class="empty">درآمدی ثبت نشده</div>'; return; }
+  list.innerHTML = incomes.map(e => `<div class="card" style="border-right-color:#10B981"><div class="card-info"><div class="card-header"><span class="card-title">💰 ${e.title}</span></div><div class="card-grid"><div class="card-field"><div class="field-label">تاریخ</div><div class="field-value">${e.date}</div></div><div class="card-field"><div class="field-label">مبلغ</div><div class="field-value" style="color:#6EE7B7">$${e.amount}</div></div>${e.note ? `<div class="card-field full"><div class="field-label">توضیحات</div><div class="field-value">${e.note}</div></div>` : ''}</div></div><button onclick="deleteIncome(${e.id})" style="background:none;border:none;color:#EF4444;cursor:pointer;">🗑</button></div>`).join('');
 }
 
-// Report
+// گزارش
 function renderReport(filterMonth = null) {
-  const allExpenses = [
-    ...receipts.map(r => ({ ...r, amount: r.total, type: 'business' })),
-    ...manualExpenses
-  ];
+  const allExpenses = manualExpenses;
   const allIncomes = incomes;
-
-  // Get unique months
   const months = [...new Set([...allExpenses, ...allIncomes].map(r => r.date?.substring(0,7)))].filter(Boolean).sort().reverse();
-
-  // Month filter buttons
   const filterDiv = document.getElementById('month-filter');
   const activeMonth = filterMonth || months[0];
-  filterDiv.innerHTML = months.map(m => `
-    <button class="month-btn ${m===activeMonth?'active':''}" onclick="renderReport('${m}')">${m}</button>
-  `).join('') || '';
-
+  filterDiv.innerHTML = months.map(m => `<button class="month-btn ${m===activeMonth?'active':''}" onclick="renderReport('${m}')">${m}</button>`).join('') || '<div>هیچ داده‌ای موجود نیست</div>';
   const filteredExpenses = allExpenses.filter(r => r.date?.startsWith(activeMonth||''));
   const filteredIncomes = allIncomes.filter(r => r.date?.startsWith(activeMonth||''));
-
   const totalIncome = filteredIncomes.reduce((s,r) => s+parseFloat(r.amount||0), 0);
-  const totalExpense = filteredExpenses.reduce((s,r) => s+parseFloat(r.amount||r.total||0), 0);
-  const businessExpenses = filteredExpenses.filter(r => r.type === 'business');
-  const totalBusiness = businessExpenses.reduce((s,r) => s+parseFloat(r.amount||0), 0);
-
-  // Group by category
+  const totalExpense = filteredExpenses.reduce((s,r) => s+parseFloat(r.amount||0), 0);
   const cats = {};
-  filteredExpenses.forEach(r => {
-    const c = r.category || 'other';
-    cats[c] = (cats[c] ||
+  filteredExpenses.forEach(r => { const c = r.category || 'other'; cats[c] = (cats[c] || 0) + parseFloat(r.amount || 0); });
+  const content = document.getElementById('report-content');
+  content.innerHTML = `
+    <div class="stats">
+      <div class="stat stat-green"><div class="stat-label">کل درآمد</div><div class="stat-value">$${totalIncome.toFixed(0)}</div></div>
+      <div class="stat stat-red"><div class="stat-label">کل هزینه</div><div class="stat-value">$${totalExpense.toFixed(0)}</div></div>
+      <div class="stat stat-purple"><div class="stat-label">مانده</div><div class="stat-value">$${(totalIncome-totalExpense).toFixed(0)}</div></div>
+    </div>
+    <div class="form-card"><div class="report-title">📊 هزینه‌ها بر اساس دسته‌بندی</div>${Object.keys(cats).length ? Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,amt]) => `<div class="report-row"><span class="report-label">${CAT_LABELS[cat]||cat}</span><span class="report-value" style="color:${CAT_COLORS[cat]||'#EEF'}">$${amt.toFixed(2)}</span></div>`).join('') : '<div style="color:#444;padding:10px 0">هزینه‌ای ثبت نشده</div>'}</div>
+    <div class="form-card"><div class="report-title">💰 درآمدها</div>${filteredIncomes.length ? filteredIncomes.map(inc => `<div class="report-row"><span class="report-label">${inc.title}</span><span class="report-value" style="color:#6EE7B7">$${inc.amount}</span></div>`).join('') : '<div style="color:#444;padding:10px 0">درآمدی ثبت نشده</div>'}</div>
+  `;
+}
+
+// شروع
+renderDashboard();
+</script>
+</body>
+</html>

@@ -10,28 +10,28 @@
     body{background:#0D0D14;color:#EEF;font-family:'Vazirmatn',Tahoma,sans-serif;min-height:100vh}
     .nav{display:flex;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06);overflow-x:auto}
     .nav-btn{flex:1;min-width:70px;padding:13px 6px;background:none;border:none;color:#555;font-family:inherit;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
-    .nav-btn.active{color:#A5B4FC;border-bottom-color:#6366F1}
+    .nav-btn.active{color:#5DCAA5;border-bottom-color:#178ADD}
     .page{display:none;padding:16px;max-width:860px;margin:0 auto}
     .page.active{display:block}
     .header{text-align:center;padding:20px 0 24px}
-    .header h1{font-size:clamp(22px,5vw,36px);font-weight:800;margin-bottom:6px;background:linear-gradient(135deg,#fff,#A5B4FC,#6EE7B7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .header h1{font-size:clamp(22px,5vw,36px);font-weight:800;margin-bottom:6px;background:linear-gradient(135deg,#fff,#5DCAA5,#6EE7B7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
     .header p{color:#555;font-size:13px}
     .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
     .stat{border-radius:14px;padding:14px 16px}
-    .stat-purple{background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.25)}
+    .stat-purple{background:rgba(23,138,221,.12);border:1px solid rgba(23,138,221,.25)}
     .stat-green{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25)}
     .stat-red{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25)}
     .stat-yellow{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25)}
     .stat-label{color:#666;font-size:11px;margin-bottom:4px}
     .stat-value{font-size:22px;font-weight:800}
-    .stat-purple .stat-value{color:#A5B4FC}
+    .stat-purple .stat-value{color:#5DCAA5}
     .stat-green .stat-value{color:#6EE7B7}
     .stat-red .stat-value{color:#FCA5A5}
     .stat-yellow .stat-value{color:#FCD34D}
-    .upload-area{border:2px dashed rgba(99,102,241,.4);border-radius:18px;min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;background:rgba(255,255,255,.02);margin-bottom:14px;padding:20px;transition:border-color .2s}
-    .upload-area:hover{border-color:rgba(99,102,241,.7)}
+    .upload-area{border:2px dashed rgba(23,138,221,.4);border-radius:18px;min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;background:rgba(255,255,255,.02);margin-bottom:14px;padding:20px;transition:border-color .2s}
+    .upload-area:hover{border-color:rgba(23,138,221,.7)}
     .btn{border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
-    .btn-primary{background:linear-gradient(135deg,#6366F1,#8B5CF6);color:white}
+    .btn-primary{background:linear-gradient(135deg,#178ADD,#0F6E56);color:white}
     .btn-green{background:linear-gradient(135deg,#10B981,#059669);color:white}
     .btn-outline{background:none;border:1px solid rgba(255,255,255,.15);color:#EEF}
     .btn-sm{padding:7px 14px;font-size:12px}
@@ -42,7 +42,7 @@
     .form-group.full{grid-column:1/-1}
     .form-label{color:#666;font-size:11px}
     .form-input{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#EEF;font-family:inherit;font-size:13px}
-    .form-input:focus{outline:none;border-color:rgba(99,102,241,.5)}
+    .form-input:focus{outline:none;border-color:rgba(23,138,221,.5)}
     select.form-input option{background:#1a1a2e}
     .form-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
     .card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start;border-right:4px solid #6B7280}
@@ -62,28 +62,28 @@
     .export-menu button{display:block;width:100%;padding:9px 14px;background:none;border:none;color:#EEF;cursor:pointer;text-align:right;font-family:inherit;font-size:12px}
     .export-menu button:hover{background:rgba(255,255,255,.05)}
     .error{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:9px 14px;margin-bottom:12px;color:#FCA5A5;font-size:12px}
-    .spinner{width:18px;height:18px;border-radius:50%;border:2px solid rgba(99,102,241,.3);border-top-color:#6366F1;animation:spin .7s linear infinite}
+    .spinner{width:18px;height:18px;border-radius:50%;border:2px solid rgba(23,138,221,.3);border-top-color:#178ADD;animation:spin .7s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
     .empty{text-align:center;padding:36px 0;color:#333}
     .month-filter{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
     .month-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:4px 12px;font-size:11px;color:#888;cursor:pointer;font-family:inherit}
-    .month-btn.active{background:rgba(99,102,241,.2);border-color:rgba(99,102,241,.4);color:#A5B4FC}
+    .month-btn.active{background:rgba(23,138,221,.2);border-color:rgba(23,138,221,.4);color:#5DCAA5}
     .report-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04)}
     .report-row:last-child{border-bottom:none}
     .report-label{font-size:13px;color:#CCC}
     .report-value{font-size:13px;font-weight:700}
-    .report-total{background:rgba(99,102,241,.1);border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;margin-top:10px}
+    .report-total{background:rgba(23,138,221,.1);border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;margin-top:10px}
     .hidden{display:none}
     /* AI Chat */
     .chat-box{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin-bottom:14px;min-height:200px;max-height:400px;overflow-y:auto}
     .chat-msg{padding:10px 14px;border-radius:12px;margin-bottom:10px;font-size:13px;line-height:1.6}
-    .chat-user{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.2);text-align:right}
+    .chat-user{background:rgba(23,138,221,.15);border:1px solid rgba(23,138,221,.2);text-align:right}
     .chat-ai{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.15)}
     .chat-input-row{display:flex;gap:8px}
     .chat-input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:#EEF;font-family:inherit;font-size:13px}
-    .chat-input:focus{outline:none;border-color:rgba(99,102,241,.5)}
+    .chat-input:focus{outline:none;border-color:rgba(23,138,221,.5)}
     .quick-questions{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
-    .quick-btn{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);border-radius:20px;padding:5px 12px;font-size:11px;color:#A5B4FC;cursor:pointer;font-family:inherit}
+    .quick-btn{background:rgba(23,138,221,.1);border:1px solid rgba(23,138,221,.2);border-radius:20px;padding:5px 12px;font-size:11px;color:#5DCAA5;cursor:pointer;font-family:inherit}
     /* Recurring */
     .recurring-badge{background:rgba(245,158,11,.15);color:#FCD34D;border-radius:20px;padding:2px 9px;font-size:11px}
   </style>
@@ -126,7 +126,7 @@
     <div id="loadingContent" class="hidden" style="text-align:center">
       <div style="display:flex;align-items:center;gap:10px;justify-content:center">
         <div class="spinner"></div>
-        <span style="color:#A5B4FC;font-size:13px">در حال خواندن رسید...</span>
+        <span style="color:#5DCAA5;font-size:13px">در حال خواندن رسید...</span>
       </div>
     </div>
   </div>
@@ -254,7 +254,7 @@
 
 <script>
 const CAT_LABELS={fuel:"⛽ بنزین",maintenance:"🔧 تعمیر",insurance:"🛡️ بیمه",phone:"📱 تلفن",meals:"🍔 غذا",carwash:"🚿 کارواش",parking:"🅿️ پارکینگ",other:"📦 سایر",rent:"🏠 اجاره",food:"🍔 غذا",entertainment:"🎬 سرگرمی",clothing:"👕 پوشاک",health:"🏥 سلامت",education:"📚 آموزش",grocery:"🛒 خرید روزانه"};
-const CAT_COLORS={fuel:"#F97316",maintenance:"#3B82F6",insurance:"#8B5CF6",phone:"#06B6D4",meals:"#F59E0B",carwash:"#10B981",parking:"#EC4899",other:"#6B7280",rent:"#8B5CF6",food:"#F59E0B",entertainment:"#EC4899",clothing:"#06B6D4",health:"#10B981",education:"#3B82F6",grocery:"#F97316"};
+const CAT_COLORS={fuel:"#F97316",maintenance:"#3B82F6",insurance:"#0F6E56",phone:"#06B6D4",meals:"#F59E0B",carwash:"#10B981",parking:"#EC4899",other:"#6B7280",rent:"#0F6E56",food:"#F59E0B",entertainment:"#EC4899",clothing:"#06B6D4",health:"#10B981",education:"#3B82F6",grocery:"#F97316"};
 const T2125={fuel:"Fuel",maintenance:"Maintenance & Repairs",insurance:"Insurance",phone:"Telephone & Utilities",meals:"Meals (50%)",carwash:"Other Expenses",parking:"Parking",other:"Other Expenses"};
 
 let receipts=JSON.parse(localStorage.getItem('receipts')||'[]');
@@ -459,7 +459,7 @@ function renderReport(filterMonth=null){
     </div>
     <div class="form-card">
       <div class="form-title">💼 خلاصه T2125</div>
-      ${bizExp.length?Object.entries(bizExp.reduce((acc,r)=>{const c=r.category||'other';acc[c]=(acc[c]||0)+parseFloat(r.amount||0);return acc;},{})).map(([cat,amt])=>`<div class="report-row"><span class="report-label">${T2125[cat]||CAT_LABELS[cat]||cat}</span><span class="report-value" style="color:#A5B4FC">$${amt.toFixed(2)}</span></div>`).join('')+`<div class="report-total"><span style="font-weight:700">جمع کسر مالیاتی</span><span style="font-weight:800;color:#A5B4FC">$${totalBiz.toFixed(2)}</span></div>`:'<div style="color:#444;font-size:12px;padding:8px 0">هنوز هزینه کاری ثبت نشده</div>'}
+      ${bizExp.length?Object.entries(bizExp.reduce((acc,r)=>{const c=r.category||'other';acc[c]=(acc[c]||0)+parseFloat(r.amount||0);return acc;},{})).map(([cat,amt])=>`<div class="report-row"><span class="report-label">${T2125[cat]||CAT_LABELS[cat]||cat}</span><span class="report-value" style="color:#5DCAA5">$${amt.toFixed(2)}</span></div>`).join('')+`<div class="report-total"><span style="font-weight:700">جمع کسر مالیاتی</span><span style="font-weight:800;color:#5DCAA5">$${totalBiz.toFixed(2)}</span></div>`:'<div style="color:#444;font-size:12px;padding:8px 0">هنوز هزینه کاری ثبت نشده</div>'}
     </div>
     <div class="section-header"><span class="section-title">دانلود</span>
       <div class="export-wrapper"><button class="btn btn-green btn-sm" onclick="toggleMenu('exportMenuR')">⬇️ دانلود ▾</button>

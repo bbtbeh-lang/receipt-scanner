@@ -1,40 +1,770 @@
-export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parseify</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#F0F7FF;color:#0C3547;font-family:'Vazirmatn',Tahoma,sans-serif;min-height:100vh}
+    body.en{direction:ltr;font-family:'Segoe UI',sans-serif}
 
-  if (req.method === "OPTIONS") return res.status(200).end();
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+    /* Login */
+    .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+    .login-card{background:#FFFFFF;border:0.5px solid #D4EAFA;border-radius:16px;padding:32px;width:100%;max-width:400px;text-align:center}
+    .login-logo{font-size:32px;font-weight:800;color:#1D9E75;margin-bottom:8px}
+    .login-sub{color:#666;font-size:13px;margin-bottom:28px}
+    .login-tabs{display:flex;background:#F0F7FF;border-radius:10px;padding:4px;margin-bottom:20px;gap:4px}
+    .login-tab{flex:1;padding:8px;border:none;background:none;border-radius:8px;font-family:inherit;font-size:13px;cursor:pointer;color:#666;font-weight:500}
+    .login-tab.active{background:#FFFFFF;color:#1D9E75;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+    .login-form{display:flex;flex-direction:column;gap:12px}
+    .login-input{background:#F5FAFF;border:1px solid #B5D4F4;border-radius:8px;padding:11px 14px;color:#0C3547;font-family:inherit;font-size:14px;width:100%}
+    .login-input:focus{outline:none;border-color:#1D9E75}
+    .login-btn{background:#1D9E75;color:white;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;width:100%}
+    .login-btn:hover{background:#0F6E56}
+    .login-divider{color:#AAA;font-size:12px;margin:4px 0}
+    .login-msg{font-size:12px;margin-top:8px;padding:8px;border-radius:8px}
+    .login-msg.error{background:#FFEEEE;color:#CC0000}
+    .login-msg.success{background:#EAFAF1;color:#0F6E56}
 
-  const { image, mimeType } = req.body;
-  if (!image) return res.status(400).json({ error: "No image provided" });
+    /* App */
+    .app{display:none}
+    .app.visible{display:block}
+    .topbar{display:flex;align-items:center;justify-content:space-between;background:#FFFFFF;border-bottom:0.5px solid #D4EAFA;padding:10px 16px}
+    .topbar-logo{font-size:18px;font-weight:800;color:#1D9E75}
+    .topbar-right{display:flex;align-items:center;gap:10px}
+    .lang-toggle{background:#F0F7FF;border:1px solid #B5D4F4;border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:inherit;color:#185FA5;font-weight:600}
+    .user-badge{background:#EAF3DE;border:1px solid #5DCAA5;border-radius:20px;padding:5px 12px;font-size:11px;color:#0F6E56}
+    .logout-btn{background:none;border:1px solid #D4EAFA;border-radius:20px;padding:5px 12px;font-size:11px;color:#888;cursor:pointer;font-family:inherit}
 
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": process.env.ANTHROPIC_API_KEY,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-5",
-      max_tokens: 500,
-      messages: [{
-        role: "user",
-        content: [
-          { type: "image", source: { type: "base64", media_type: mimeType || "image/jpeg", data: image } },
-          { type: "text", text: 'Read this receipt. Reply ONLY with this JSON (no extra text, no markdown):\n{"vendor":"store name","date":"YYYY-MM-DD","amount":"0.00","tax":"0.00","total":"0.00","category":"fuel or maintenance or insurance or phone or meals or carwash or parking or other"}' },
-        ],
-      }],
-    }),
+    .nav{display:flex;background:#FFFFFF;border-bottom:0.5px solid #D4EAFA;overflow-x:auto}
+    .nav-btn{flex:1;min-width:70px;padding:12px 6px;background:none;border:none;color:#888;font-family:inherit;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;font-weight:500}
+    .nav-btn.active{color:#1D9E75;border-bottom-color:#1D9E75}
+
+    .page{display:none;padding:16px;max-width:860px;margin:0 auto}
+    .page.active{display:block}
+
+    .header{text-align:center;padding:20px 0 24px}
+    .header h1{font-size:clamp(22px,5vw,36px);font-weight:800;margin-bottom:6px;color:#1D9E75}
+    .header p{color:#888;font-size:13px}
+
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+    .stat{border-radius:12px;padding:14px 16px}
+    .stat-green{background:#EAF3DE;border:0.5px solid #5DCAA5}
+    .stat-blue{background:#E6F1FB;border:0.5px solid #378ADD}
+    .stat-teal{background:#E1F5EE;border:0.5px solid #1D9E75}
+    .stat-lblue{background:#E6F1FB;border:0.5px solid #85B7EB}
+    .stat-label{color:#666;font-size:11px;margin-bottom:4px}
+    .stat-value{font-size:22px;font-weight:800}
+    .stat-green .stat-value{color:#0F6E56}
+    .stat-blue .stat-value{color:#185FA5}
+    .stat-teal .stat-value{color:#0F6E56}
+    .stat-lblue .stat-value{color:#185FA5}
+
+    .upload-area{border:2px dashed #5DCAA5;border-radius:18px;min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;background:#F5FAFF;margin-bottom:14px;padding:20px;transition:border-color .2s}
+    .upload-area:hover{border-color:#1D9E75;background:#EAF3DE}
+
+    .btn{border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+    .btn-primary{background:#1D9E75;color:white}
+    .btn-primary:hover{background:#0F6E56}
+    .btn-blue{background:#378ADD;color:white}
+    .btn-blue:hover{background:#185FA5}
+    .btn-outline{background:none;border:1px solid #B5D4F4;color:#185FA5}
+    .btn-sm{padding:7px 14px;font-size:12px}
+
+    .form-card{background:#FFFFFF;border:0.5px solid #D4EAFA;border-radius:16px;padding:18px;margin-bottom:14px}
+    .form-title{font-size:14px;font-weight:700;margin-bottom:14px;color:#0C3547}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .form-group{display:flex;flex-direction:column;gap:5px}
+    .form-group.full{grid-column:1/-1}
+    .form-label{color:#888;font-size:11px}
+    .form-input{background:#F5FAFF;border:1px solid #B5D4F4;border-radius:8px;padding:9px 12px;color:#0C3547;font-family:inherit;font-size:13px}
+    .form-input:focus{outline:none;border-color:#1D9E75}
+    select.form-input option{background:#FFFFFF}
+    .form-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+
+    .card{background:#FFFFFF;border:0.5px solid #D4EAFA;border-radius:14px;padding:14px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start;border-right:4px solid #1D9E75}
+    body.en .card{border-right:none;border-left:4px solid #1D9E75}
+    .card-info{flex:1}
+    .card-header{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:9px}
+    .card-title{font-size:14px;font-weight:800;color:#0C3547}
+    .card-badge{border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600}
+    .card-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+    .card-field{background:#F0F7FF;border-radius:7px;padding:5px 9px}
+    .field-label{color:#888;font-size:10px;margin-bottom:2px}
+    .field-value{color:#0C3547;font-size:12px;font-weight:600}
+    .card-thumb{width:48px;height:60px;object-fit:cover;border-radius:7px;opacity:.7;flex-shrink:0}
+
+    .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .section-title{font-size:15px;font-weight:700;color:#0C3547}
+
+    .export-wrapper{position:relative}
+    .export-menu{display:none;position:absolute;left:0;top:110%;background:#FFFFFF;border:0.5px solid #D4EAFA;border-radius:10px;overflow:hidden;z-index:10;min-width:140px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+    .export-menu button{display:block;width:100%;padding:9px 14px;background:none;border:none;color:#0C3547;cursor:pointer;text-align:right;font-family:inherit;font-size:12px}
+    body.en .export-menu button{text-align:left}
+    .export-menu button:hover{background:#F0F7FF}
+
+    .error-box{background:#FFEEEE;border:1px solid #FFCCCC;border-radius:10px;padding:9px 14px;margin-bottom:12px;color:#CC0000;font-size:12px}
+    .spinner{width:18px;height:18px;border-radius:50%;border:2px solid rgba(29,158,117,.3);border-top-color:#1D9E75;animation:spin .7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .empty{text-align:center;padding:36px 0;color:#AAA}
+
+    .month-filter{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+    .month-btn{background:#F0F7FF;border:1px solid #B5D4F4;border-radius:20px;padding:4px 12px;font-size:11px;color:#185FA5;cursor:pointer;font-family:inherit}
+    .month-btn.active{background:#EAF3DE;border-color:#5DCAA5;color:#0F6E56}
+
+    .report-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid #D4EAFA}
+    .report-row:last-child{border-bottom:none}
+    .report-label{font-size:13px;color:#555}
+    .report-value{font-size:13px;font-weight:700}
+    .report-total{background:#E6F1FB;border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;margin-top:10px}
+
+    .chat-box{background:#F5FAFF;border:0.5px solid #D4EAFA;border-radius:16px;padding:16px;margin-bottom:14px;min-height:200px;max-height:400px;overflow-y:auto}
+    .chat-msg{padding:10px 14px;border-radius:12px;margin-bottom:10px;font-size:13px;line-height:1.6}
+    .chat-user{background:#E6F1FB;border:1px solid #B5D4F4;text-align:right}
+    body.en .chat-user{text-align:left}
+    .chat-ai{background:#EAF3DE;border:1px solid #9FE1CB;color:#0C3547}
+    .chat-input-row{display:flex;gap:8px}
+    .chat-input{flex:1;background:#F5FAFF;border:1px solid #B5D4F4;border-radius:10px;padding:10px 12px;color:#0C3547;font-family:inherit;font-size:13px}
+    .chat-input:focus{outline:none;border-color:#1D9E75}
+    .quick-questions{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+    .quick-btn{background:#E6F1FB;border:1px solid #B5D4F4;border-radius:20px;padding:5px 12px;font-size:11px;color:#185FA5;cursor:pointer;font-family:inherit}
+    .quick-btn:hover{background:#EAF3DE;border-color:#5DCAA5;color:#0F6E56}
+
+    .recurring-badge{background:#E6F1FB;color:#185FA5;border-radius:20px;padding:2px 9px;font-size:11px}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-logo">Parseify</div>
+    <div class="login-sub" id="loginSub">مدیریت مالی ساده برای ایرانی‌های کانادا</div>
+
+    <div style="display:flex;justify-content:center;margin-bottom:20px">
+      <button class="lang-toggle" onclick="toggleLoginLang()" id="loginLangBtn">🇨🇦 English</button>
+    </div>
+
+    <div class="login-tabs">
+      <button class="login-tab active" id="tabLogin" onclick="switchTab('login')" data-fa="ورود" data-en="Login">ورود</button>
+      <button class="login-tab" id="tabRegister" onclick="switchTab('register')" data-fa="ثبت‌نام" data-en="Register">ثبت‌نام</button>
+    </div>
+
+    <div class="login-form">
+      <input class="login-input" type="email" id="emailInput" placeholder="ایمیل" data-fa="ایمیل" data-en="Email">
+      <input class="login-input" type="password" id="passInput" placeholder="رمز عبور" data-fa="رمز عبور" data-en="Password">
+      <div id="nameField" class="hidden">
+        <input class="login-input" type="text" id="nameInput" placeholder="نام" data-fa="نام" data-en="Full name" style="width:100%">
+      </div>
+      <button class="login-btn" onclick="handleAuth()" id="authBtn">ورود</button>
+      <div class="login-divider" id="orText">یا</div>
+      <button class="login-btn" style="background:#378ADD" onclick="loginDemo()">
+        <span id="demoText">ورود آزمایشی (بدون ثبت‌نام)</span>
+      </button>
+    </div>
+    <div id="loginMsg"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="appWrap">
+  <div class="topbar">
+    <div class="topbar-logo">Parseify</div>
+    <div class="topbar-right">
+      <button class="lang-toggle" onclick="toggleLang()" id="appLangBtn">🇨🇦 English</button>
+      <span class="user-badge" id="userBadge"></span>
+      <button class="logout-btn" onclick="logout()" id="logoutBtn">خروج</button>
+    </div>
+  </div>
+
+  <nav class="nav" id="mainNav">
+    <button class="nav-btn active" onclick="showPage('dashboard',this)" data-fa="📊 داشبورد" data-en="📊 Dashboard">📊 داشبورد</button>
+    <button class="nav-btn" onclick="showPage('receipts',this)" data-fa="📸 رسید" data-en="📸 Receipts">📸 رسید</button>
+    <button class="nav-btn" onclick="showPage('expenses',this)" data-fa="💸 هزینه" data-en="💸 Expenses">💸 هزینه</button>
+    <button class="nav-btn" onclick="showPage('recurring',this)" data-fa="🔄 ثابت" data-en="🔄 Recurring">🔄 ثابت</button>
+    <button class="nav-btn" onclick="showPage('income',this)" data-fa="💰 درآمد" data-en="💰 Income">💰 درآمد</button>
+    <button class="nav-btn" onclick="showPage('report',this)" data-fa="📋 گزارش" data-en="📋 Report">📋 گزارش</button>
+    <button class="nav-btn" onclick="showPage('ai',this)" data-fa="🤖 دستیار" data-en="🤖 Assistant">🤖 دستیار</button>
+  </nav>
+
+  <!-- DASHBOARD -->
+  <div id="page-dashboard" class="page active">
+    <div class="header">
+      <h1>Parseify</h1>
+      <p id="dashSub">مدیریت مالی ساده برای ایرانی‌های کانادا</p>
+    </div>
+    <div class="stats">
+      <div class="stat stat-green"><div class="stat-label" id="lbl-income">درآمد این ماه</div><div class="stat-value" id="dash-income">$0</div></div>
+      <div class="stat stat-blue"><div class="stat-label" id="lbl-expense">هزینه این ماه</div><div class="stat-value" id="dash-expense">$0</div></div>
+      <div class="stat stat-teal"><div class="stat-label" id="lbl-balance">مانده</div><div class="stat-value" id="dash-balance">$0</div></div>
+      <div class="stat stat-lblue"><div class="stat-label" id="lbl-count">تراکنش</div><div class="stat-value" id="dash-count">0</div></div>
+    </div>
+    <div class="form-card">
+      <div class="form-title" id="dashCardTitle">📅 ماه جاری: <span id="current-month-label"></span></div>
+      <div id="dash-breakdown"></div>
+    </div>
+  </div>
+
+  <!-- RECEIPTS -->
+  <div id="page-receipts" class="page">
+    <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+      <div id="uploadContent" style="text-align:center">
+        <div style="font-size:34px;margin-bottom:8px">📷</div>
+        <button class="btn btn-primary" id="uploadBtnText">آپلود رسید</button>
+        <div style="color:#888;font-size:11px;margin-top:7px" id="uploadHint">یا عکس را اینجا بکش</div>
+      </div>
+      <div id="loadingContent" class="hidden" style="text-align:center">
+        <div style="display:flex;align-items:center;gap:10px;justify-content:center">
+          <div class="spinner"></div>
+          <span style="color:#1D9E75;font-size:13px" id="scanningText">در حال خواندن رسید...</span>
+        </div>
+      </div>
+    </div>
+    <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="processFile(event.target.files[0])">
+    <div class="error-box hidden" id="errorBox"></div>
+    <div class="section-header">
+      <span class="section-title" id="receiptsTitle">رسیدهای ثبت شده</span>
+      <div class="export-wrapper">
+        <button class="btn btn-blue btn-sm" onclick="toggleMenu('exportMenu1')" id="downloadBtn1">⬇️ دانلود ▾</button>
+        <div class="export-menu" id="exportMenu1">
+          <button onclick="exportCSV('fa')">🇮🇷 فارسی</button>
+          <button onclick="exportCSV('en')">🇨🇦 English</button>
+        </div>
+      </div>
+    </div>
+    <div id="receiptsList"></div>
+  </div>
+
+  <!-- EXPENSES -->
+  <div id="page-expenses" class="page">
+    <div class="form-card">
+      <div class="form-title" id="expFormTitle">➕ افزودن هزینه دستی</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label" id="expTitleLbl">عنوان</label><input class="form-input" id="exp-title" placeholder="مثلاً: اجاره خانه"></div>
+        <div class="form-group"><label class="form-label" id="expAmountLbl">مبلغ ($)</label><input class="form-input" id="exp-amount" type="number" placeholder="0.00"></div>
+        <div class="form-group"><label class="form-label" id="expDateLbl">تاریخ</label><input class="form-input" id="exp-date" type="date"></div>
+        <div class="form-group"><label class="form-label" id="expCatLbl">دسته‌بندی</label>
+          <select class="form-input" id="exp-category">
+            <option value="rent">🏠 اجاره / Rent</option>
+            <option value="food">🍔 غذا / Food</option>
+            <option value="fuel">⛽ بنزین / Fuel</option>
+            <option value="phone">📱 تلفن / Phone</option>
+            <option value="insurance">🛡️ بیمه / Insurance</option>
+            <option value="maintenance">🔧 تعمیر / Maintenance</option>
+            <option value="carwash">🚿 کارواش / Car Wash</option>
+            <option value="parking">🅿️ پارکینگ / Parking</option>
+            <option value="entertainment">🎬 سرگرمی / Entertainment</option>
+            <option value="clothing">👕 پوشاک / Clothing</option>
+            <option value="health">🏥 سلامت / Health</option>
+            <option value="education">📚 آموزش / Education</option>
+            <option value="grocery">🛒 خرید روزانه / Grocery</option>
+            <option value="other">📦 سایر / Other</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label" id="expTypeLbl">نوع</label>
+          <select class="form-input" id="exp-type">
+            <option value="personal">🏠 شخصی / Personal</option>
+            <option value="business">💼 کاری / Business (T2125)</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label" id="expNoteLbl">توضیحات</label><input class="form-input" id="exp-note" placeholder="..."></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="addManualExpense()" id="addExpBtn">➕ ثبت هزینه</button>
+        <button class="btn btn-outline" onclick="clearForm('exp-title','exp-amount','exp-note')" id="clearExpBtn">پاک کردن</button>
+      </div>
+    </div>
+    <div id="manual-expenses-list"></div>
+  </div>
+
+  <!-- RECURRING -->
+  <div id="page-recurring" class="page">
+    <div class="form-card">
+      <div class="form-title" id="recFormTitle">🔄 افزودن هزینه ثابت ماهانه</div>
+      <p style="color:#888;font-size:12px;margin-bottom:14px" id="recDesc">این هزینه‌ها هر ماه خودکار اضافه می‌شن</p>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label" id="recTitleLbl">عنوان</label><input class="form-input" id="rec-title" placeholder="مثلاً: اجاره خانه"></div>
+        <div class="form-group"><label class="form-label" id="recAmountLbl">مبلغ ($)</label><input class="form-input" id="rec-amount" type="number" placeholder="0.00"></div>
+        <div class="form-group"><label class="form-label" id="recDayLbl">روز پرداخت</label><input class="form-input" id="rec-day" type="number" min="1" max="28" placeholder="1"></div>
+        <div class="form-group"><label class="form-label" id="recCatLbl">دسته‌بندی</label>
+          <select class="form-input" id="rec-category">
+            <option value="rent">🏠 اجاره / Rent</option>
+            <option value="phone">📱 تلفن / Phone</option>
+            <option value="insurance">🛡️ بیمه / Insurance</option>
+            <option value="maintenance">🔧 لیزینگ / Lease</option>
+            <option value="entertainment">🎬 اشتراک / Subscription</option>
+            <option value="health">🏥 باشگاه / Gym</option>
+            <option value="other">📦 سایر / Other</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label" id="recTypeLbl">نوع</label>
+          <select class="form-input" id="rec-type">
+            <option value="personal">🏠 شخصی / Personal</option>
+            <option value="business">💼 کاری / Business</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label" id="recStartLbl">از چه ماهی</label><input class="form-input" id="rec-start" type="month"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="addRecurring()" id="addRecBtn">➕ ثبت هزینه ثابت</button>
+      </div>
+    </div>
+    <div class="section-header"><span class="section-title" id="recListTitle">هزینه‌های ثابت فعال</span></div>
+    <div id="recurring-list"></div>
+  </div>
+
+  <!-- INCOME -->
+  <div id="page-income" class="page">
+    <div class="form-card">
+      <div class="form-title" id="incFormTitle">💰 افزودن درآمد</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label" id="incSrcLbl">منبع</label><input class="form-input" id="inc-title" placeholder="مثلاً: حقوق، Uber"></div>
+        <div class="form-group"><label class="form-label" id="incAmountLbl">مبلغ ($)</label><input class="form-input" id="inc-amount" type="number" placeholder="0.00"></div>
+        <div class="form-group"><label class="form-label" id="incDateLbl">تاریخ</label><input class="form-input" id="inc-date" type="date"></div>
+        <div class="form-group"><label class="form-label" id="incTypeLbl">نوع</label>
+          <select class="form-input" id="inc-type">
+            <option value="employment">👔 حقوق / Employment</option>
+            <option value="selfemployed">🚗 Self-employed</option>
+            <option value="other">📦 سایر / Other</option>
+          </select>
+        </div>
+        <div class="form-group full"><label class="form-label" id="incNoteLbl">توضیحات</label><input class="form-input" id="inc-note" placeholder="..."></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="addIncome()" id="addIncBtn">➕ ثبت درآمد</button>
+        <button class="btn btn-outline" onclick="clearForm('inc-title','inc-amount','inc-note')" id="clearIncBtn">پاک کردن</button>
+      </div>
+    </div>
+    <div id="income-list"></div>
+  </div>
+
+  <!-- REPORT -->
+  <div id="page-report" class="page">
+    <div class="header"><h1 id="reportTitle">📋 گزارش مالی</h1><p id="reportSub">خلاصه برای tax و بودجه</p></div>
+    <div class="month-filter" id="month-filter"></div>
+    <div id="report-content"></div>
+  </div>
+
+  <!-- AI -->
+  <div id="page-ai" class="page">
+    <div class="header"><h1 id="aiTitle">🤖 دستیار هوشمند</h1><p id="aiSub">از داده‌های مالی‌ات بپرس</p></div>
+    <div class="quick-questions" id="quickQuestions">
+      <button class="quick-btn" onclick="askAI(T.q1)">💸 این ماه چقدر خرج کردم؟</button>
+      <button class="quick-btn" onclick="askAI(T.q2)">📈 بیشترین هزینه کجا؟</button>
+      <button class="quick-btn" onclick="askAI(T.q3)">⛽ هزینه بنزین؟</button>
+      <button class="quick-btn" onclick="askAI(T.q4)">💼 کسر مالیاتی؟</button>
+      <button class="quick-btn" onclick="askAI(T.q5)">📊 مقایسه درآمد/هزینه</button>
+    </div>
+    <div class="chat-box" id="chatBox">
+      <div class="chat-msg chat-ai" id="aiWelcome">سلام! من دستیار مالی Parseify هستم 👋<br>از داده‌های ثبت شده‌ات می‌تونم کمک کنم.</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chatInput" placeholder="سوالت رو بنویس..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="btn btn-primary" onclick="sendChat()" id="sendBtn">ارسال</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CAT_LABELS={fuel:"⛽ بنزین/Fuel",maintenance:"🔧 تعمیر/Maintenance",insurance:"🛡️ بیمه/Insurance",phone:"📱 تلفن/Phone",meals:"🍔 غذا/Food",carwash:"🚿 کارواش/Car Wash",parking:"🅿️ پارکینگ/Parking",other:"📦 سایر/Other",rent:"🏠 اجاره/Rent",food:"🍔 غذا/Food",entertainment:"🎬 سرگرمی/Entertainment",clothing:"👕 پوشاک/Clothing",health:"🏥 سلامت/Health",education:"📚 آموزش/Education",grocery:"🛒 خرید/Grocery"};
+const CAT_COLORS={fuel:"#F97316",maintenance:"#378ADD",insurance:"#8B5CF6",phone:"#06B6D4",meals:"#F59E0B",carwash:"#1D9E75",parking:"#EC4899",other:"#6B7280",rent:"#8B5CF6",food:"#F59E0B",entertainment:"#EC4899",clothing:"#06B6D4",health:"#1D9E75",education:"#378ADD",grocery:"#F97316"};
+const T2125={fuel:"Fuel",maintenance:"Maintenance & Repairs",insurance:"Insurance",phone:"Telephone & Utilities",meals:"Meals (50%)",carwash:"Other Expenses",parking:"Parking",other:"Other Expenses"};
+
+// Translations
+const TRANS = {
+  fa: {
+    dashSub:"مدیریت مالی ساده برای ایرانی‌های کانادا",
+    lbl_income:"درآمد این ماه", lbl_expense:"هزینه این ماه", lbl_balance:"مانده", lbl_count:"تراکنش",
+    dashCardTitle:"📅 ماه جاری: ", uploadBtn:"آپلود رسید", uploadHint:"یا عکس را اینجا بکش",
+    scanning:"در حال خواندن رسید...", receiptsTitle:"رسیدهای ثبت شده",
+    expFormTitle:"➕ افزودن هزینه دستی", expTitleLbl:"عنوان", expAmountLbl:"مبلغ ($)", expDateLbl:"تاریخ", expCatLbl:"دسته‌بندی", expTypeLbl:"نوع", expNoteLbl:"توضیحات", addExpBtn:"➕ ثبت هزینه", clearExpBtn:"پاک کردن",
+    recFormTitle:"🔄 افزودن هزینه ثابت ماهانه", recDesc:"این هزینه‌ها هر ماه خودکار اضافه می‌شن", recTitleLbl:"عنوان", recAmountLbl:"مبلغ ($)", recDayLbl:"روز پرداخت", recCatLbl:"دسته‌بندی", recTypeLbl:"نوع", recStartLbl:"از چه ماهی", addRecBtn:"➕ ثبت هزینه ثابت", recListTitle:"هزینه‌های ثابت فعال",
+    incFormTitle:"💰 افزودن درآمد", incSrcLbl:"منبع", incAmountLbl:"مبلغ ($)", incDateLbl:"تاریخ", incTypeLbl:"نوع", incNoteLbl:"توضیحات", addIncBtn:"➕ ثبت درآمد", clearIncBtn:"پاک کردن",
+    reportTitle:"📋 گزارش مالی", reportSub:"خلاصه برای tax و بودجه",
+    aiTitle:"🤖 دستیار هوشمند", aiSub:"از داده‌های مالی‌ات بپرس", aiWelcome:"سلام! من دستیار مالی Parseify هستم 👋\nاز داده‌های ثبت شده‌ات می‌تونم کمک کنم.", sendBtn:"ارسال",
+    logoutBtn:"خروج", langBtn:"🇨🇦 English",
+    q1:"این ماه چقدر خرج کردم؟", q2:"بیشترین هزینه کجا بوده؟", q3:"هزینه بنزین این ماه چقدر بوده؟", q4:"چقدر برای مالیات کسر می‌شه؟", q5:"درآمد و هزینه این ماه رو مقایسه کن",
+    empty_receipts:"هنوز رسیدی اسکن نشده", empty_expenses:"هنوز هزینه‌ای ثبت نشده", empty_recurring:"هنوز هزینه ثابتی تعریف نشده", empty_income:"هنوز درآمدی ثبت نشده",
+    loginSub:"مدیریت مالی ساده برای ایرانی‌های کانادا", tabLogin:"ورود", tabRegister:"ثبت‌نام", loginLangBtn:"🇨🇦 English", demoText:"ورود آزمایشی (بدون ثبت‌نام)", orText:"یا"
+  },
+  en: {
+    dashSub:"Simple financial management for Iranians in Canada",
+    lbl_income:"Income this month", lbl_expense:"Expenses this month", lbl_balance:"Balance", lbl_count:"Transactions",
+    dashCardTitle:"📅 Current month: ", uploadBtn:"Upload Receipt", uploadHint:"or drag image here",
+    scanning:"Reading receipt...", receiptsTitle:"Saved Receipts",
+    expFormTitle:"➕ Add Manual Expense", expTitleLbl:"Title", expAmountLbl:"Amount ($)", expDateLbl:"Date", expCatLbl:"Category", expTypeLbl:"Type", expNoteLbl:"Notes", addExpBtn:"➕ Add Expense", clearExpBtn:"Clear",
+    recFormTitle:"🔄 Add Monthly Recurring", recDesc:"These expenses are added automatically every month", recTitleLbl:"Title", recAmountLbl:"Amount ($)", recDayLbl:"Payment day", recCatLbl:"Category", recTypeLbl:"Type", recStartLbl:"Starting from", addRecBtn:"➕ Add Recurring", recListTitle:"Active Recurring Expenses",
+    incFormTitle:"💰 Add Income", incSrcLbl:"Source", incAmountLbl:"Amount ($)", incDateLbl:"Date", incTypeLbl:"Type", incNoteLbl:"Notes", addIncBtn:"➕ Add Income", clearIncBtn:"Clear",
+    reportTitle:"📋 Financial Report", reportSub:"Summary for tax and budget",
+    aiTitle:"🤖 Smart Assistant", aiSub:"Ask about your financial data", aiWelcome:"Hi! I'm Parseify's financial assistant 👋\nI can help you analyze your financial data.", sendBtn:"Send",
+    logoutBtn:"Logout", langBtn:"🇮🇷 فارسی",
+    q1:"How much did I spend this month?", q2:"Where did I spend the most?", q3:"How much did I spend on fuel?", q4:"How much can I deduct for taxes?", q5:"Compare my income and expenses this month",
+    empty_receipts:"No receipts scanned yet", empty_expenses:"No expenses added yet", empty_recurring:"No recurring expenses defined", empty_income:"No income added yet",
+    loginSub:"Simple financial management for Iranians in Canada", tabLogin:"Login", tabRegister:"Register", loginLangBtn:"🇮🇷 فارسی", demoText:"Demo (no registration)", orText:"or"
+  }
+};
+
+let lang = localStorage.getItem('lang') || 'fa';
+let T = TRANS[lang];
+let currentUser = null;
+let receipts = [];
+let manualExpenses = [];
+let incomes = [];
+let recurringItems = [];
+let loginLang = 'fa';
+let loginTab = 'login';
+
+function applyLang() {
+  T = TRANS[lang];
+  document.documentElement.lang = lang;
+  if(lang === 'en') { document.body.classList.add('en'); document.documentElement.dir='ltr'; }
+  else { document.body.classList.remove('en'); document.documentElement.dir='rtl'; }
+  const ids = ['dashSub','lbl-income','lbl-expense','lbl-balance','lbl-count','uploadBtnText','uploadHint','scanningText','receiptsTitle','expFormTitle','expTitleLbl','expAmountLbl','expDateLbl','expCatLbl','expTypeLbl','expNoteLbl','addExpBtn','clearExpBtn','recFormTitle','recDesc','recTitleLbl','recAmountLbl','recDayLbl','recCatLbl','recTypeLbl','recStartLbl','addRecBtn','recListTitle','incFormTitle','incSrcLbl','incAmountLbl','incDateLbl','incTypeLbl','incNoteLbl','addIncBtn','clearIncBtn','reportTitle','reportSub','aiTitle','aiSub','aiWelcome','sendBtn','logoutBtn'];
+  const keys = ['dashSub','lbl_income','lbl_expense','lbl_balance','lbl_count','uploadBtn','uploadHint','scanning','receiptsTitle','expFormTitle','expTitleLbl','expAmountLbl','expDateLbl','expCatLbl','expTypeLbl','expNoteLbl','addExpBtn','clearExpBtn','recFormTitle','recDesc','recTitleLbl','recAmountLbl','recDayLbl','recCatLbl','recTypeLbl','recStartLbl','addRecBtn','recListTitle','incFormTitle','incSrcLbl','incAmountLbl','incDateLbl','incTypeLbl','incNoteLbl','addIncBtn','clearIncBtn','reportTitle','reportSub','aiTitle','aiSub','aiWelcome','sendBtn','logoutBtn'];
+  ids.forEach((id,i) => { const el=document.getElementById(id); if(el) el.textContent=T[keys[i]]||''; });
+  document.getElementById('appLangBtn').textContent = T.langBtn;
+  document.querySelectorAll('#mainNav .nav-btn').forEach(btn => { btn.textContent = btn.dataset[lang]; });
+  document.querySelectorAll('#quickQuestions .quick-btn').forEach((btn,i) => {
+    const qs=['q1','q2','q3','q4','q5'];
+    btn.textContent = T[qs[i]];
   });
-
-  const data = await response.json();
-  if (data.error) return res.status(500).json({ error: data.error.message });
-
-  const text = data.content[0].text;
-  const match = text.match(/\{[\s\S]*?\}/);
-  if (!match) return res.status(500).json({ error: "Could not parse receipt" });
-
-  res.status(200).json(JSON.parse(match[0]));
+  localStorage.setItem('lang', lang);
 }
+
+function toggleLang() { lang = lang==='fa'?'en':'fa'; applyLang(); renderDashboard(); }
+
+function toggleLoginLang() {
+  loginLang = loginLang==='fa'?'en':'fa';
+  const t = TRANS[loginLang];
+  document.getElementById('loginSub').textContent = t.loginSub;
+  document.getElementById('tabLogin').textContent = t.tabLogin;
+  document.getElementById('tabRegister').textContent = t.tabRegister;
+  document.getElementById('loginLangBtn').textContent = t.loginLangBtn;
+  document.getElementById('demoText').textContent = t.demoText;
+  document.getElementById('orText').textContent = t.orText;
+  document.getElementById('emailInput').placeholder = loginLang==='fa'?'ایمیل':'Email';
+  document.getElementById('passInput').placeholder = loginLang==='fa'?'رمز عبور':'Password';
+  if(loginLang==='en'){document.body.classList.add('en');document.documentElement.dir='ltr';}
+  else{document.body.classList.remove('en');document.documentElement.dir='rtl';}
+}
+
+function switchTab(tab) {
+  loginTab = tab;
+  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+  document.getElementById('tabRegister').classList.toggle('active', tab==='register');
+  document.getElementById('nameField').classList.toggle('hidden', tab==='login');
+  document.getElementById('authBtn').textContent = tab==='login' ? TRANS[loginLang].tabLogin : TRANS[loginLang].tabRegister;
+}
+
+function handleAuth() {
+  const email = document.getElementById('emailInput').value.trim();
+  const pass = document.getElementById('passInput').value;
+  const msg = document.getElementById('loginMsg');
+  if(!email || !pass) { showMsg('error', loginLang==='fa'?'لطفاً همه فیلدها را پر کنید':'Please fill all fields'); return; }
+  // Simple local auth for demo
+  const users = JSON.parse(localStorage.getItem('users')||'{}');
+  if(loginTab==='register') {
+    const name = document.getElementById('nameInput').value.trim();
+    if(users[email]) { showMsg('error', loginLang==='fa'?'این ایمیل قبلاً ثبت شده':'Email already registered'); return; }
+    users[email] = {pass, name: name||email.split('@')[0]};
+    localStorage.setItem('users', JSON.stringify(users));
+    showMsg('success', loginLang==='fa'?'ثبت‌نام موفق! در حال ورود...':'Registered! Logging in...');
+    setTimeout(()=>loginUser(email, users[email].name), 1000);
+  } else {
+    if(!users[email] || users[email].pass !== pass) { showMsg('error', loginLang==='fa'?'ایمیل یا رمز اشتباه است':'Wrong email or password'); return; }
+    loginUser(email, users[email].name);
+  }
+}
+
+function loginDemo() {
+  loginUser('demo@parseify.com', 'Demo User');
+}
+
+function showMsg(type, text) {
+  const msg = document.getElementById('loginMsg');
+  msg.className = 'login-msg ' + type;
+  msg.textContent = text;
+}
+
+function loginUser(email, name) {
+  currentUser = {email, name};
+  localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  loadData();
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('appWrap').classList.add('visible');
+  document.getElementById('userBadge').textContent = name;
+  lang = localStorage.getItem('lang') || 'fa';
+  applyLang();
+  applyRecurring();
+  renderDashboard();
+}
+
+function logout() {
+  currentUser = null;
+  localStorage.removeItem('currentUser');
+  document.getElementById('loginWrap').style.display = 'flex';
+  document.getElementById('appWrap').classList.remove('visible');
+  document.getElementById('loginMsg').textContent = '';
+}
+
+function loadData() {
+  const key = currentUser.email;
+  receipts = JSON.parse(localStorage.getItem(key+'_receipts')||'[]');
+  manualExpenses = JSON.parse(localStorage.getItem(key+'_expenses')||'[]');
+  incomes = JSON.parse(localStorage.getItem(key+'_incomes')||'[]');
+  recurringItems = JSON.parse(localStorage.getItem(key+'_recurring')||'[]');
+}
+
+function save() {
+  const key = currentUser.email;
+  localStorage.setItem(key+'_receipts', JSON.stringify(receipts));
+  localStorage.setItem(key+'_expenses', JSON.stringify(manualExpenses));
+  localStorage.setItem(key+'_incomes', JSON.stringify(incomes));
+  localStorage.setItem(key+'_recurring', JSON.stringify(recurringItems));
+}
+
+function applyRecurring() {
+  const now=new Date();
+  const ym=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  recurringItems.forEach(r=>{
+    if(!r.active) return;
+    const alreadyAdded=manualExpenses.some(e=>e.recurringId===r.id && e.date.startsWith(ym));
+    if(!alreadyAdded){
+      const day=String(r.day||1).padStart(2,'0');
+      manualExpenses.push({id:Date.now()+Math.random(),title:r.title,amount:r.amount,date:`${ym}-${day}`,category:r.category,type:r.type,note:'🔄 Auto',recurringId:r.id,source:'recurring'});
+    }
+  });
+  save();
+}
+
+const now=new Date();
+document.getElementById('exp-date').value=now.toISOString().split('T')[0];
+document.getElementById('inc-date').value=now.toISOString().split('T')[0];
+document.getElementById('rec-start').value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+document.getElementById('current-month-label').textContent=now.toLocaleDateString('fa-IR',{year:'numeric',month:'long'});
+
+// Check existing session
+const saved = localStorage.getItem('currentUser');
+if(saved) { try { loginUser(JSON.parse(saved).email, JSON.parse(saved).name); } catch(e){} }
+
+function showPage(name,btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='dashboard') renderDashboard();
+  if(name==='receipts') renderReceipts();
+  if(name==='expenses') renderManualExpenses();
+  if(name==='recurring') renderRecurring();
+  if(name==='income') renderIncomes();
+  if(name==='report') renderReport();
+}
+
+function getAllExpenses() {
+  return [...receipts.map(r=>({...r,amount:parseFloat(r.total||0),title:r.vendor,type:r.type||'business'})),...manualExpenses.map(e=>({...e,amount:parseFloat(e.amount||0)}))];
+}
+
+function renderDashboard() {
+  const m=now.getMonth(),y=now.getFullYear();
+  const ym=`${y}-${String(m+1).padStart(2,'0')}`;
+  const allExp=getAllExpenses().filter(r=>r.date&&r.date.startsWith(ym));
+  const allInc=incomes.filter(r=>r.date&&r.date.startsWith(ym));
+  const totalIncome=allInc.reduce((s,r)=>s+parseFloat(r.amount||0),0);
+  const totalExpense=allExp.reduce((s,r)=>s+parseFloat(r.amount||0),0);
+  const balance=totalIncome-totalExpense;
+  document.getElementById('dash-income').textContent='$'+totalIncome.toFixed(0);
+  document.getElementById('dash-expense').textContent='$'+totalExpense.toFixed(0);
+  document.getElementById('dash-balance').textContent=(balance>=0?'+':'')+'$'+balance.toFixed(0);
+  document.getElementById('dash-count').textContent=allExp.length+allInc.length;
+  const cats={};
+  allExp.forEach(r=>{const c=r.category||'other';cats[c]=(cats[c]||0)+parseFloat(r.amount||0);});
+  const bd=document.getElementById('dash-breakdown');
+  if(!Object.keys(cats).length){bd.innerHTML=`<div style="color:#AAA;font-size:12px;text-align:center;padding:10px">${T.empty_expenses}</div>`;return;}
+  bd.innerHTML=Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>`<div class="report-row"><span class="report-label">${CAT_LABELS[cat]||cat}</span><span class="report-value" style="color:${CAT_COLORS[cat]||'#0C3547'}">$${amt.toFixed(2)}</span></div>`).join('');
+}
+
+async function processFile(file) {
+  if(!file?.type.startsWith('image/')) return;
+  document.getElementById('uploadContent').classList.add('hidden');
+  document.getElementById('loadingContent').classList.remove('hidden');
+  const reader=new FileReader();
+  reader.onload=async(e)=>{
+    const dataUrl=e.target.result;
+    try{
+      const res=await fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:dataUrl.split(',')[1],mimeType:file.type})});
+      const data=await res.json();
+      if(data.error) throw new Error(data.error);
+      receipts.unshift({id:Date.now(),...data,img:dataUrl,source:'scan'});
+      save();renderReceipts();renderDashboard();
+      document.getElementById('errorBox').classList.add('hidden');
+    }catch(err){
+      const box=document.getElementById('errorBox');box.textContent='⚠️ '+err.message;box.classList.remove('hidden');
+    }finally{
+      document.getElementById('uploadContent').classList.remove('hidden');
+      document.getElementById('loadingContent').classList.add('hidden');
+      document.getElementById('fileInput').value='';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderReceipts() {
+  const list=document.getElementById('receiptsList');
+  if(!receipts.length){list.innerHTML=`<div class="empty"><div style="font-size:38px;opacity:.3;margin-bottom:8px">🧾</div><div style="font-size:13px">${T.empty_receipts}</div></div>`;return;}
+  list.innerHTML=receipts.map(r=>{const c=CAT_COLORS[r.category]||'#1D9E75';return`<div class="card" style="border-right-color:${c}"><div class="card-info"><div class="card-header"><span class="card-title">${r.vendor||'—'}</span><span class="card-badge" style="background:${c}22;color:${c}">${CAT_LABELS[r.category]||r.category}</span></div><div class="card-grid"><div class="card-field"><div class="field-label">${lang==='fa'?'تاریخ':'Date'}</div><div class="field-value">${r.date}</div></div><div class="card-field"><div class="field-label">${lang==='fa'?'مبلغ':'Amount'}</div><div class="field-value">$${r.amount}</div></div><div class="card-field"><div class="field-label">${lang==='fa'?'مالیات':'Tax'}</div><div class="field-value">$${r.tax}</div></div><div class="card-field"><div class="field-label">${lang==='fa'?'جمع کل':'Total'}</div><div class="field-value">$${r.total}</div></div></div></div>${r.img?`<img src="${r.img}" class="card-thumb" alt="">`:''}`;}).join('');
+}
+
+function addManualExpense() {
+  const title=document.getElementById('exp-title').value.trim();
+  const amount=document.getElementById('exp-amount').value;
+  const date=document.getElementById('exp-date').value;
+  if(!title||!amount||!date){alert(lang==='fa'?'لطفاً همه فیلدها را پر کنید':'Please fill all fields');return;}
+  manualExpenses.unshift({id:Date.now(),title,amount:parseFloat(amount).toFixed(2),date,category:document.getElementById('exp-category').value,type:document.getElementById('exp-type').value,note:document.getElementById('exp-note').value,source:'manual'});
+  save();renderManualExpenses();renderDashboard();
+  clearForm('exp-title','exp-amount','exp-note');
+}
+
+function deleteExpense(id){manualExpenses=manualExpenses.filter(e=>e.id!==id);save();renderManualExpenses();renderDashboard();}
+
+function renderManualExpenses() {
+  const list=document.getElementById('manual-expenses-list');
+  const items=manualExpenses.filter(e=>e.source!=='recurring');
+  if(!items.length){list.innerHTML=`<div class="empty"><div style="font-size:38px;opacity:.3;margin-bottom:8px">💸</div><div style="font-size:13px">${T.empty_expenses}</div></div>`;return;}
+  list.innerHTML=items.map(e=>{const c=CAT_COLORS[e.category]||'#1D9E75';return`<div class="card" style="border-right-color:${c}"><div class="card-info"><div class="card-header"><span class="card-title">${e.title}</span><span class="card-badge" style="background:${c}22;color:${c}">${CAT_LABELS[e.category]||e.category}</span></div><div class="card-grid"><div class="card-field"><div class="field-label">${lang==='fa'?'تاریخ':'Date'}</div><div class="field-value">${e.date}</div></div><div class="card-field"><div class="field-label">${lang==='fa'?'مبلغ':'Amount'}</div><div class="field-value">$${e.amount}</div></div></div></div><button onclick="deleteExpense(${e.id})" style="background:none;border:none;color:#CC0000;cursor:pointer;font-size:16px;flex-shrink:0">🗑</button></div>`;}).join('');
+}
+
+function addRecurring() {
+  const title=document.getElementById('rec-title').value.trim();
+  const amount=document.getElementById('rec-amount').value;
+  if(!title||!amount){alert(lang==='fa'?'لطفاً عنوان و مبلغ را وارد کنید':'Please enter title and amount');return;}
+  recurringItems.unshift({id:Date.now(),title,amount:parseFloat(amount).toFixed(2),day:parseInt(document.getElementById('rec-day').value||1),category:document.getElementById('rec-category').value,type:document.getElementById('rec-type').value,start:document.getElementById('rec-start').value,active:true});
+  save();applyRecurring();renderRecurring();renderDashboard();
+  document.getElementById('rec-title').value='';document.getElementById('rec-amount').value='';
+}
+
+function toggleRecurring(id){const item=recurringItems.find(r=>r.id===id);if(item)item.active=!item.active;save();renderRecurring();}
+function deleteRecurring(id){recurringItems=recurringItems.filter(r=>r.id!==id);manualExpenses=manualExpenses.filter(e=>e.recurringId!==id);save();renderRecurring();renderDashboard();}
+
+function renderRecurring() {
+  const list=document.getElementById('recurring-list');
+  if(!recurringItems.length){list.innerHTML=`<div class="empty"><div style="font-size:38px;opacity:.3;margin-bottom:8px">🔄</div><div style="font-size:13px">${T.empty_recurring}</div></div>`;return;}
+  list.innerHTML=recurringItems.map(r=>{const c=CAT_COLORS[r.category]||'#1D9E75';return`<div class="card" style="border-right-color:${r.active?c:'#CCC'}"><div class="card-info"><div class="card-header"><span class="card-title" style="color:${r.active?'#0C3547':'#AAA'}">${r.title}</span><span class="recurring-badge">🔄 ${lang==='fa'?'ماهانه':'Monthly'}</span></div><div class="card-grid"><div class="card-field"><div class="field-label">${lang==='fa'?'مبلغ':'Amount'}</div><div class="field-value">$${r.amount}</div></div><div class="card-field"><div class="field-label">${lang==='fa'?'روز':'Day'}</div><div class="field-value">${lang==='fa'?'روز':'Day'} ${r.day}</div></div></div></div><div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0"><button onclick="toggleRecurring(${r.id})" class="btn btn-sm ${r.active?'btn-outline':'btn-primary'}">${r.active?'⏸':'▶️'}</button><button onclick="deleteRecurring(${r.id})" style="background:none;border:none;color:#CC0000;cursor:pointer;font-size:16px">🗑</button></div></div>`;}).join('');
+}
+
+function addIncome() {
+  const title=document.getElementById('inc-title').value.trim();
+  const amount=document.getElementById('inc-amount').value;
+  const date=document.getElementById('inc-date').value;
+  if(!title||!amount||!date){alert(lang==='fa'?'لطفاً همه فیلدها را پر کنید':'Please fill all fields');return;}
+  incomes.unshift({id:Date.now(),title,amount:parseFloat(amount).toFixed(2),date,type:document.getElementById('inc-type').value,note:document.getElementById('inc-note').value});
+  save();renderIncomes();renderDashboard();
+  clearForm('inc-title','inc-amount','inc-note');
+}
+
+function deleteIncome(id){incomes=incomes.filter(e=>e.id!==id);save();renderIncomes();renderDashboard();}
+
+function renderIncomes() {
+  const list=document.getElementById('income-list');
+  if(!incomes.length){list.innerHTML=`<div class="empty"><div style="font-size:38px;opacity:.3;margin-bottom:8px">💰</div><div style="font-size:13px">${T.empty_income}</div></div>`;return;}
+  list.innerHTML=incomes.map(e=>`<div class="card" style="border-right-color:#1D9E75"><div class="card-info"><div class="card-header"><span class="card-title">${e.title}</span><span class="card-badge" style="background:#EAF3DE;color:#0F6E56">💰 ${lang==='fa'?'درآمد':'Income'}</span></div><div class="card-grid"><div class="card-field"><div class="field-label">${lang==='fa'?'تاریخ':'Date'}</div><div class="field-value">${e.date}</div></div><div class="card-field"><div class="field-label">${lang==='fa'?'مبلغ':'Amount'}</div><div class="field-value" style="color:#0F6E56">$${e.amount}</div></div></div></div><button onclick="deleteIncome(${e.id})" style="background:none;border:none;color:#CC0000;cursor:pointer;font-size:16px;flex-shrink:0">🗑</button></div>`).join('');
+}
+
+function renderReport(filterMonth=null) {
+  const allExp=getAllExpenses();
+  const allInc=incomes;
+  const months=[...new Set([...allExp,...allInc].map(r=>r.date?.substring(0,7)))].filter(Boolean).sort().reverse();
+  const activeMonth=filterMonth||months[0]||`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  document.getElementById('month-filter').innerHTML=months.map(m=>`<button class="month-btn ${m===activeMonth?'active':''}" onclick="renderReport('${m}')">${m}</button>`).join('');
+  const fExp=allExp.filter(r=>r.date?.startsWith(activeMonth));
+  const fInc=allInc.filter(r=>r.date?.startsWith(activeMonth));
+  const totalIncome=fInc.reduce((s,r)=>s+parseFloat(r.amount||0),0);
+  const totalExpense=fExp.reduce((s,r)=>s+parseFloat(r.amount||0),0);
+  const bizExp=fExp.filter(r=>r.type==='business');
+  const totalBiz=bizExp.reduce((s,r)=>s+parseFloat(r.amount||0),0);
+  const cats={};
+  fExp.forEach(r=>{const c=r.category||'other';cats[c]=(cats[c]||0)+parseFloat(r.amount||0);});
+  document.getElementById('report-content').innerHTML=`
+    <div class="stats" style="margin-bottom:16px">
+      <div class="stat stat-green"><div class="stat-label">${lang==='fa'?'کل درآمد':'Total Income'}</div><div class="stat-value">$${totalIncome.toFixed(0)}</div></div>
+      <div class="stat stat-blue"><div class="stat-label">${lang==='fa'?'کل هزینه':'Total Expenses'}</div><div class="stat-value">$${totalExpense.toFixed(0)}</div></div>
+      <div class="stat stat-teal"><div class="stat-label">${lang==='fa'?'مانده':'Balance'}</div><div class="stat-value">$${(totalIncome-totalExpense).toFixed(0)}</div></div>
+      <div class="stat stat-lblue"><div class="stat-label">${lang==='fa'?'کسر مالیاتی':'Tax Deductible'}</div><div class="stat-value">$${totalBiz.toFixed(0)}</div></div>
+    </div>
+    <div class="form-card">
+      <div class="form-title">${lang==='fa'?'📊 هزینه‌ها بر اساس دسته‌بندی':'📊 Expenses by Category'}</div>
+      ${Object.keys(cats).length?Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>`<div class="report-row"><span class="report-label">${CAT_LABELS[cat]||cat}</span><span class="report-value" style="color:${CAT_COLORS[cat]||'#0C3547'}">$${amt.toFixed(2)}</span></div>`).join(''):`<div style="color:#AAA;font-size:12px;padding:8px 0">${T.empty_expenses}</div>`}
+    </div>
+    <div class="form-card">
+      <div class="form-title">${lang==='fa'?'💼 خلاصه T2125':'💼 T2125 Summary'}</div>
+      ${bizExp.length?Object.entries(bizExp.reduce((acc,r)=>{const c=r.category||'other';acc[c]=(acc[c]||0)+parseFloat(r.amount||0);return acc;},{})).map(([cat,amt])=>`<div class="report-row"><span class="report-label">${T2125[cat]||CAT_LABELS[cat]||cat}</span><span class="report-value" style="color:#185FA5">$${amt.toFixed(2)}</span></div>`).join('')+`<div class="report-total"><span style="font-weight:700">${lang==='fa'?'جمع کسر مالیاتی':'Total Tax Deductible'}</span><span style="font-weight:800;color:#185FA5">$${totalBiz.toFixed(2)}</span></div>`:`<div style="color:#AAA;font-size:12px;padding:8px 0">${lang==='fa'?'هنوز هزینه کاری ثبت نشده':'No business expenses yet'}</div>`}
+    </div>
+    <div class="section-header"><span class="section-title">${lang==='fa'?'دانلود':'Download'}</span>
+      <div class="export-wrapper"><button class="btn btn-blue btn-sm" onclick="toggleMenu('exportMenuR')">⬇️ ${lang==='fa'?'دانلود':'Download'} ▾</button>
+      <div class="export-menu" id="exportMenuR"><button onclick="exportReport('fa','${activeMonth}')">🇮🇷 فارسی</button><button onclick="exportReport('en','${activeMonth}')">🇨🇦 English</button></div></div>
+    </div>`;
+}
+
+async function sendChat(){const input=document.getElementById('chatInput');const q=input.value.trim();if(!q)return;input.value='';askAI(q);}
+
+async function askAI(question) {
+  const box=document.getElementById('chatBox');
+  box.innerHTML+=`<div class="chat-msg chat-user">${question}</div>`;
+  box.scrollTop=box.scrollHeight;
+  const allExp=getAllExpenses();
+  const summary={
+    totalExpenses:allExp.reduce((s,r)=>s+parseFloat(r.amount||0),0).toFixed(2),
+    totalIncome:incomes.reduce((s,r)=>s+parseFloat(r.amount||0),0).toFixed(2),
+    byCategory:Object.entries(allExp.reduce((acc,r)=>{const c=CAT_LABELS[r.category]||r.category||'Other';acc[c]=(acc[c]||0)+parseFloat(r.amount||0);return acc;},{})).map(([k,v])=>`${k}: $${v.toFixed(2)}`).join(', '),
+    expenses:allExp.slice(0,30).map(r=>`${r.date}: ${r.title||r.vendor||'—'} $${r.amount} (${CAT_LABELS[r.category]||r.category})`).join('\n'),
+    incomeList:incomes.slice(0,10).map(r=>`${r.date}: ${r.title} $${r.amount}`).join('\n'),
+    recurring:recurringItems.filter(r=>r.active).map(r=>`${r.title}: $${r.amount}/month`).join(', ')
+  };
+  const loadingId='loading-'+Date.now();
+  box.innerHTML+=`<div class="chat-msg chat-ai" id="${loadingId}"><div class="spinner" style="display:inline-block"></div></div>`;
+  box.scrollTop=box.scrollHeight;
+  try{
+    const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question,summary,lang})});
+    const data=await res.json();
+    document.getElementById(loadingId).textContent=data.answer||data.error||'Error';
+  }catch(e){document.getElementById(loadingId).textContent='⚠️ Connection error';}
+  box.scrollTop=box.scrollHeight;
+}
+
+function exportCSV(lang){
+  const isFa=lang==='fa';
+  const h=isFa?['تاریخ','فروشنده','مبلغ','مالیات','جمع کل','دسته‌بندی']:['Date','Vendor','Amount','Tax','Total','Category'];
+  const rows=receipts.map(r=>[r.date,r.vendor,r.amount,r.tax,r.total,isFa?(CAT_LABELS[r.category]||r.category):(T2125[r.category]||r.category)]);
+  downloadCSV([h,...rows],isFa?'رسیدها.csv':'receipts.csv');
+  toggleMenu('exportMenu1');
+}
+
+function exportReport(lang,month){
+  const isFa=lang==='fa';
+  const allExp=getAllExpenses().filter(r=>r.date?.startsWith(month));
+  const allInc=incomes.filter(r=>r.date?.startsWith(month));
+  const eh=isFa?['تاریخ','عنوان','مبلغ','دسته‌بندی','نوع']:['Date','Title','Amount','Category','Type'];
+  const er=allExp.map(r=>[r.date,r.title||r.vendor,r.amount,isFa?(CAT_LABELS[r.category]||r.category):(T2125[r.category]||r.category),r.type==='business'?(isFa?'کاری':'Business'):(isFa?'شخصی':'Personal')]);
+  const ih=isFa?['تاریخ','منبع','مبلغ']:['Date','Source','Amount'];
+  const ir=allInc.map(r=>[r.date,r.title,r.amount]);
+  const csv=[[isFa?'=== هزینه‌ها ===':'=== EXPENSES ==='],eh,...er,[''],[isFa?'=== درآمد ===':'=== INCOME ==='],ih,...ir].map(r=>Array.isArray(r)?r.map(c=>`"${c}"`).join(','):r).join('\n');
+  downloadCSV(null,isFa?`گزارش_${month}.csv`:`report_${month}.csv`,csv);
+  toggleMenu('exportMenuR');
+}
+
+function downloadCSV(rows,filename,rawCsv){
+  const csv=rawCsv||rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=filename;a.click();
+}
+
+function toggleMenu(id){const m=document.getElementById(id);if(m)m.style.display=m.style.display==='block'?'none':'block';}
+document.addEventListener('click',e=>{if(!e.target.closest('.export-wrapper'))document.querySelectorAll('.export-menu').forEach(m=>m.style.display='none');});
+function clearForm(...ids){ids.forEach(id=>{document.getElementById(id).value=''});}
+</script>
+</body>
+</html>

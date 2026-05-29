@@ -5,8 +5,33 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const { question, summary } = req.body;
+  const { question, summary, lang } = req.body;
   if (!question) return res.status(400).json({ error: "No question provided" });
+
+  const isFa = lang !== 'en';
+  const systemPrompt = isFa
+    ? `تو یه دستیار مالی هوشمند فارسی‌زبان هستی برای ایرانی‌های کانادا.
+داده‌های مالی کاربر:
+- جمع کل هزینه‌ها: $${summary.totalExpenses}
+- جمع کل درآمد: $${summary.totalIncome}
+- هزینه‌ها بر اساس دسته: ${summary.byCategory}
+- هزینه‌های ثابت ماهانه: ${summary.recurring}
+لیست هزینه‌ها:
+${summary.expenses}
+لیست درآمد:
+${summary.incomeList}
+پاسخ‌هایت رو به فارسی و کوتاه بده. اگه داده‌ای نیست صادقانه بگو.`
+    : `You are a smart financial assistant for Iranians in Canada.
+User financial data:
+- Total expenses: $${summary.totalExpenses}
+- Total income: $${summary.totalIncome}
+- Expenses by category: ${summary.byCategory}
+- Monthly recurring: ${summary.recurring}
+Expense list:
+${summary.expenses}
+Income list:
+${summary.incomeList}
+Reply in English, be concise. If data is missing, say so honestly.`;
 
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -18,20 +43,7 @@ export default async function handler(req, res) {
     body: JSON.stringify({
       model: "claude-sonnet-4-5",
       max_tokens: 500,
-      system: `تو یه دستیار مالی هوشمند فارسی‌زبان هستی برای ایرانی‌های کانادا. 
-داده‌های مالی کاربر:
-- جمع کل هزینه‌ها: $${summary.totalExpenses}
-- جمع کل درآمد: $${summary.totalIncome}
-- هزینه‌ها بر اساس دسته: ${summary.byCategory}
-- هزینه‌های ثابت ماهانه: ${summary.recurring}
-
-لیست هزینه‌ها:
-${summary.expenses}
-
-لیست درآمد:
-${summary.incomeList}
-
-پاسخ‌هایت رو به فارسی و کوتاه بده. اگه داده‌ای نیست صادقانه بگو.`,
+      system: systemPrompt,
       messages: [{ role: "user", content: question }],
     }),
   });

@@ -6,6 +6,7 @@
   <title>Parseify</title>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{background:#F4F8FC;color:#0D3B7A;font-family:'Vazirmatn','Segoe UI',sans-serif;min-height:100vh}
@@ -261,7 +262,7 @@
         <div id="uploadContent" style="text-align:center">
           <div style="font-size:40px;margin-bottom:10px">📷</div>
           <button class="btn btn-green" id="uploadBtnText">آپلود رسید</button>
-          <div style="color:#AAA;font-size:12px;margin-top:8px" id="uploadHint">یا عکس را اینجا بکش</div>
+          <div style="color:#AAA;font-size:12px;margin-top:8px" id="uploadHint">یا عکس / PDF را اینجا بکش</div>
         </div>
         <div id="loadingContent" class="hidden" style="text-align:center">
           <div style="display:flex;align-items:center;gap:10px;justify-content:center">
@@ -270,7 +271,7 @@
           </div>
         </div>
       </div>
-      <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="processFile(event.target.files[0])">
+      <input type="file" id="fileInput" accept="image/*,application/pdf" class="hidden" onchange="processFile(event.target.files[0])">
       <div class="error-box hidden" id="errorBox"></div>
       <div class="section-header">
         <span class="section-title" id="receiptsTitle">رسیدهای ثبت شده</span>
@@ -615,31 +616,55 @@ function renderDashboard(){
 
 // ── RECEIPTS ──
 async function processFile(file){
-  if(!file?.type.startsWith('image/'))return;
+  if(!file)return;
+  const isImage=file.type.startsWith('image/');
+  const isPDF=file.type==='application/pdf';
+  if(!isImage&&!isPDF)return;
   document.getElementById('uploadContent').classList.add('hidden');
   document.getElementById('loadingContent').classList.remove('hidden');
-  const reader=new FileReader();
-  reader.onload=async(e)=>{
-    const dataUrl=e.target.result;
-    try{
-      const res=await fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:dataUrl.split(',')[1],mimeType:file.type})});
-      const data=await res.json();
-      if(data.error)throw new Error(data.error);
-      const newReceipt={id:Date.now(),...data,img:dataUrl,source:'scan',user_id:currentUser.id};
-      receipts.unshift(newReceipt);
-      if(!currentUser.isDemo){const{img,...noImg}=newReceipt;await sb.from('receipts').insert(noImg);}
-      else saveLocal();
-      showSync();renderReceipts();renderDashboard();
-      document.getElementById('errorBox').classList.add('hidden');
-    }catch(err){
-      const box=document.getElementById('errorBox');box.textContent='⚠️ '+err.message;box.classList.remove('hidden');
-    }finally{
-      document.getElementById('uploadContent').classList.remove('hidden');
-      document.getElementById('loadingContent').classList.add('hidden');
-      document.getElementById('fileInput').value='';
+
+  try{
+    let base64,mimeType;
+    if(isImage){
+      // image: read directly
+      base64=await new Promise((res,rej)=>{
+        const r=new FileReader();
+        r.onload=e=>res(e.target.result.split(',')[1]);
+        r.onerror=rej;
+        r.readAsDataURL(file);
+      });
+      mimeType=file.type;
+    } else {
+      // PDF: convert first page to image via PDF.js
+      pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+      const arrayBuffer=await file.arrayBuffer();
+      const pdf=await pdfjsLib.getDocument({data:arrayBuffer}).promise;
+      const page=await pdf.getPage(1);
+      const viewport=page.getViewport({scale:2.0});
+      const canvas=document.createElement('canvas');
+      canvas.width=viewport.width;canvas.height=viewport.height;
+      await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
+      base64=canvas.toDataURL('image/jpeg',0.9).split(',')[1];
+      mimeType='image/jpeg';
     }
-  };
-  reader.readAsDataURL(file);
+
+    const res=await fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:base64,mimeType})});
+    const data=await res.json();
+    if(data.error)throw new Error(data.error);
+    const dataUrl='data:'+mimeType+';base64,'+base64;
+    const newReceipt={id:Date.now(),...data,img:dataUrl,source:'scan',user_id:currentUser.id};
+    receipts.unshift(newReceipt);
+    if(!currentUser.isDemo){const{img,...noImg}=newReceipt;await sb.from('receipts').insert(noImg);}
+    else saveLocal();
+    showSync();renderReceipts();renderDashboard();
+    document.getElementById('errorBox').classList.add('hidden');
+  }catch(err){
+    const box=document.getElementById('errorBox');box.textContent='⚠️ '+err.message;box.classList.remove('hidden');
+  }finally{
+    document.getElementById('uploadContent').classList.remove('hidden');
+    document.getElementById('loadingContent').classList.add('hidden');
+    document.getElementById('fileInput').value='';
+  }
 }
 
 function renderReceipts(){

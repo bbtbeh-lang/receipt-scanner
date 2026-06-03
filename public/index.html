@@ -5,15 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Parseify</title>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{background:#F4F8FC;color:#0D3B7A;font-family:'Vazirmatn','Segoe UI',sans-serif;min-height:100vh}
     body.en{direction:ltr}
-
-    /* LOGO SVG */
     .logo-svg{display:inline-block;vertical-align:middle}
-
-    /* LOGIN */
     .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(135deg,#EAF3DE 0%,#E6F1FB 100%)}
     .login-card{background:#FFFFFF;border:0.5px solid #D4EAFA;border-radius:20px;padding:36px;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(29,158,117,.08)}
     .login-logo-wrap{text-align:center;margin-bottom:24px;direction:ltr}
@@ -33,12 +30,8 @@
     .login-msg.success{background:#EAFAF1;color:#0F6E56}
     .lang-row{display:flex;justify-content:center;margin-bottom:20px}
     .lang-btn-sm{background:#F4F8FC;border:1px solid #D4EAFA;border-radius:20px;padding:6px 16px;font-size:12px;cursor:pointer;font-family:inherit;color:#1565C0;font-weight:500}
-
-    /* APP */
     .app{display:none}
     .app.visible{display:flex;min-height:100vh}
-
-    /* SIDEBAR */
     .sidebar{width:200px;background:#FFFFFF;border-left:0.5px solid #D4EAFA;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;right:0;height:100vh;z-index:100}
     body.en .sidebar{border-left:none;border-right:0.5px solid #D4EAFA;right:auto;left:0}
     .sidebar-logo{padding:20px 16px;border-bottom:0.5px solid #D4EAFA;direction:ltr}
@@ -56,21 +49,13 @@
     .logout-btn{width:100%;background:none;border:1px solid #D4EAFA;border-radius:10px;padding:8px;font-size:12px;color:#888;cursor:pointer;font-family:inherit;transition:all .2s}
     .logout-btn:hover{background:#F4F8FC;color:#0D3B7A}
     .lang-toggle{width:100%;background:#EAF3DE;border:0.5px solid #5DCAA5;border-radius:10px;padding:8px;font-size:12px;color:#0F6E56;cursor:pointer;font-family:inherit;font-weight:500;margin-bottom:8px}
-
-    /* MAIN */
     .main{margin-right:200px;flex:1;padding:24px;max-width:calc(100% - 200px)}
     body.en .main{margin-right:0;margin-left:200px}
-
-    /* PAGES */
     .page{display:none}
     .page.active{display:block}
-
-    /* PAGE HEADER */
     .page-header{margin-bottom:24px}
     .page-title{font-size:22px;font-weight:700;color:#0D3B7A;margin-bottom:4px}
     .page-sub{font-size:13px;color:#888}
-
-    /* STATS */
     .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:24px}
     .stat{background:#FFFFFF;border:0.5px solid #D4EAFA;border-radius:16px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
     .stat-label{font-size:12px;color:#888;margin-bottom:8px;font-weight:500;display:flex;align-items:center;gap:6px}
@@ -83,16 +68,10 @@
     .stat-blue .stat-label{color:#1565C0}
     .stat-teal{border-top:3px solid #00897B}
     .stat-teal .stat-label{color:#00695C}
-
-    /* CARDS */
     .card{background:#FFFFFF;border:0.5px solid #D4EAFA;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
     .card-title{font-size:15px;font-weight:700;color:#0D3B7A;margin-bottom:16px}
-
-    /* UPLOAD */
     .upload-area{border:2px dashed #5DCAA5;border-radius:16px;min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;background:#F4F8FC;margin-bottom:16px;padding:24px;transition:all .2s}
     .upload-area:hover{border-color:#1D9E75;background:#EAF3DE}
-
-    /* BUTTONS */
     .btn{border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
     .btn-green{background:#1D9E75;color:white}
     .btn-green:hover{background:#0F6E56}
@@ -101,8 +80,6 @@
     .btn-outline{background:none;border:1px solid #D4EAFA;color:#0D3B7A}
     .btn-outline:hover{background:#F4F8FC}
     .btn-sm{padding:7px 14px;font-size:12px}
-
-    /* FORM */
     .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .form-group{display:flex;flex-direction:column;gap:6px}
     .form-group.full{grid-column:1/-1}
@@ -111,8 +88,6 @@
     .form-input:focus{outline:none;border-color:#1D9E75}
     select.form-input option{background:#FFFFFF}
     .form-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
-
-    /* ITEM CARD */
     .item-card{background:#FFFFFF;border:0.5px solid #D4EAFA;border-radius:14px;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;border-right:4px solid #1D9E75;box-shadow:0 1px 4px rgba(0,0,0,.03)}
     body.en .item-card{border-right:none;border-left:4px solid #1D9E75}
     .item-info{flex:1}
@@ -124,35 +99,23 @@
     .field-label{color:#AAA;font-size:10px;margin-bottom:2px;font-weight:500}
     .field-value{color:#0D3B7A;font-size:12px;font-weight:600}
     .item-thumb{width:50px;height:64px;object-fit:cover;border-radius:8px;opacity:.7;flex-shrink:0}
-
-    /* SECTION HEADER */
     .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
     .section-title{font-size:15px;font-weight:700;color:#0D3B7A}
-
-    /* EXPORT */
     .export-wrapper{position:relative}
     .export-menu{display:none;position:absolute;left:0;top:110%;background:#FFFFFF;border:0.5px solid #D4EAFA;border-radius:12px;overflow:hidden;z-index:10;min-width:140px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
     body.en .export-menu{left:auto;right:0}
     .export-menu button{display:block;width:100%;padding:10px 16px;background:none;border:none;color:#0D3B7A;cursor:pointer;text-align:right;font-family:inherit;font-size:13px;font-weight:500}
     body.en .export-menu button{text-align:left}
     .export-menu button:hover{background:#F4F8FC}
-
-    /* ERROR */
     .error-box{background:#FFEEEE;border:1px solid #FFCCCC;border-radius:10px;padding:10px 16px;margin-bottom:14px;color:#CC0000;font-size:12px}
     .spinner{width:18px;height:18px;border-radius:50%;border:2px solid rgba(29,158,117,.3);border-top-color:#1D9E75;animation:spin .7s linear infinite;display:inline-block}
     @keyframes spin{to{transform:rotate(360deg)}}
-
-    /* EMPTY */
     .empty{text-align:center;padding:48px 0;color:#CCC}
     .empty-icon{font-size:48px;margin-bottom:12px;opacity:.4}
     .empty-text{font-size:14px}
-
-    /* MONTH FILTER */
     .month-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
     .month-btn{background:#FFFFFF;border:1px solid #D4EAFA;border-radius:20px;padding:5px 14px;font-size:12px;color:#888;cursor:pointer;font-family:inherit;font-weight:500;transition:all .2s}
     .month-btn.active{background:#EAF3DE;border-color:#5DCAA5;color:#0F6E56;font-weight:600}
-
-    /* REPORT */
     .report-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid #F4F8FC}
     .report-row:last-child{border-bottom:none}
     .report-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block;margin-left:8px}
@@ -160,8 +123,6 @@
     .report-label{font-size:13px;color:#555;display:flex;align-items:center}
     .report-value{font-size:13px;font-weight:700;color:#0D3B7A}
     .report-total{background:#EAF3DE;border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;margin-top:12px}
-
-    /* CHAT */
     .chat-box{background:#F4F8FC;border:0.5px solid #D4EAFA;border-radius:16px;padding:16px;margin-bottom:14px;min-height:200px;max-height:380px;overflow-y:auto}
     .chat-msg{padding:10px 14px;border-radius:12px;margin-bottom:10px;font-size:13px;line-height:1.7}
     .chat-user{background:#E6F1FB;border:1px solid #B5D4F4;text-align:right}
@@ -173,11 +134,10 @@
     .quick-questions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
     .quick-btn{background:#FFFFFF;border:1px solid #D4EAFA;border-radius:20px;padding:6px 14px;font-size:12px;color:#1565C0;cursor:pointer;font-family:inherit;font-weight:500;transition:all .2s}
     .quick-btn:hover{background:#EAF3DE;border-color:#5DCAA5;color:#0F6E56}
-
     .recurring-badge{background:#E6F1FB;color:#1565C0;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:500}
     .hidden{display:none}
-
-    /* MOBILE */
+    .sync-indicator{font-size:11px;color:#1D9E75;text-align:center;padding:4px;opacity:0;transition:opacity .3s}
+    .sync-indicator.show{opacity:1}
     @media(max-width:768px){
       .sidebar{width:100%;height:auto;position:fixed;bottom:0;top:auto;right:0;left:0;border-left:none;border-top:0.5px solid #D4EAFA;flex-direction:row}
       body.en .sidebar{border-right:none;border-top:0.5px solid #D4EAFA}
@@ -198,19 +158,9 @@
     <div class="login-logo-wrap">
       <svg width="220" height="80" viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#7BC67E"/>
-            <stop offset="50%" style="stop-color:#1D9E75"/>
-            <stop offset="100%" style="stop-color:#1565C0"/>
-          </linearGradient>
-          <linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#A8D8A8"/>
-            <stop offset="100%" style="stop-color:#1D9E75"/>
-          </linearGradient>
-          <linearGradient id="lg3" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" style="stop-color:#1565C0"/>
-            <stop offset="100%" style="stop-color:#1D9E75"/>
-          </linearGradient>
+          <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#7BC67E"/><stop offset="50%" style="stop-color:#1D9E75"/><stop offset="100%" style="stop-color:#1565C0"/></linearGradient>
+          <linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#A8D8A8"/><stop offset="100%" style="stop-color:#1D9E75"/></linearGradient>
+          <linearGradient id="lg3" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#1565C0"/><stop offset="100%" style="stop-color:#1D9E75"/></linearGradient>
         </defs>
         <path d="M 60 160 L 60 50 Q 60 40 70 40 L 115 40 Q 155 40 165 75 Q 175 110 145 125 Q 165 130 160 160" fill="none" stroke="url(#lg1)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M 70 40 Q 160 40 160 82 Q 160 125 70 125" fill="none" stroke="url(#lg1)" stroke-width="16" stroke-linecap="round"/>
@@ -222,16 +172,13 @@
         <text x="187" y="148" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="22" font-weight="300" letter-spacing="3" fill="#1D9E75">smart finance</text>
       </svg>
     </div>
-
     <div class="lang-row">
       <button class="lang-btn-sm" onclick="toggleLoginLang()" id="loginLangBtn">🇨🇦 English</button>
     </div>
-
     <div class="login-tabs">
       <button class="login-tab active" id="tabLogin" onclick="switchTab('login')">ورود</button>
       <button class="login-tab" id="tabRegister" onclick="switchTab('register')">ثبت‌نام</button>
     </div>
-
     <div class="login-form">
       <input class="login-input" type="email" id="emailInput" placeholder="ایمیل">
       <input class="login-input" type="password" id="passInput" placeholder="رمز عبور">
@@ -248,25 +195,13 @@
 
 <!-- APP -->
 <div class="app" id="appWrap">
-
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="sidebar-logo">
       <svg width="140" height="50" viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="slg1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#7BC67E"/>
-            <stop offset="50%" style="stop-color:#1D9E75"/>
-            <stop offset="100%" style="stop-color:#1565C0"/>
-          </linearGradient>
-          <linearGradient id="slg2" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#A8D8A8"/>
-            <stop offset="100%" style="stop-color:#1D9E75"/>
-          </linearGradient>
-          <linearGradient id="slg3" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" style="stop-color:#1565C0"/>
-            <stop offset="100%" style="stop-color:#1D9E75"/>
-          </linearGradient>
+          <linearGradient id="slg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#7BC67E"/><stop offset="50%" style="stop-color:#1D9E75"/><stop offset="100%" style="stop-color:#1565C0"/></linearGradient>
+          <linearGradient id="slg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#A8D8A8"/><stop offset="100%" style="stop-color:#1D9E75"/></linearGradient>
+          <linearGradient id="slg3" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#1565C0"/><stop offset="100%" style="stop-color:#1D9E75"/></linearGradient>
         </defs>
         <path d="M 60 160 L 60 50 Q 60 40 70 40 L 115 40 Q 155 40 165 75 Q 175 110 145 125 Q 165 130 160 160" fill="none" stroke="url(#slg1)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M 70 40 Q 160 40 160 82 Q 160 125 70 125" fill="none" stroke="url(#slg1)" stroke-width="16" stroke-linecap="round"/>
@@ -277,33 +212,18 @@
         <text x="185" y="115" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="700" letter-spacing="-2" fill="#0D3B7A">Parseify</text>
       </svg>
     </div>
-
     <nav class="sidebar-nav" id="sidebarNav">
-      <div class="sidebar-item active" onclick="showPage('dashboard',this)" data-fa="📊 داشبورد" data-en="📊 Dashboard">
-        <span class="sidebar-icon">📊</span><span class="sidebar-label">داشبورد</span>
-      </div>
-      <div class="sidebar-item" onclick="showPage('receipts',this)" data-fa="📸 رسیدها" data-en="📸 Receipts">
-        <span class="sidebar-icon">📸</span><span class="sidebar-label">رسیدها</span>
-      </div>
-      <div class="sidebar-item" onclick="showPage('expenses',this)" data-fa="💸 هزینه‌ها" data-en="💸 Expenses">
-        <span class="sidebar-icon">💸</span><span class="sidebar-label">هزینه‌ها</span>
-      </div>
-      <div class="sidebar-item" onclick="showPage('recurring',this)" data-fa="🔄 ثابت" data-en="🔄 Recurring">
-        <span class="sidebar-icon">🔄</span><span class="sidebar-label">ثابت</span>
-      </div>
-      <div class="sidebar-item" onclick="showPage('income',this)" data-fa="💰 درآمد" data-en="💰 Income">
-        <span class="sidebar-icon">💰</span><span class="sidebar-label">درآمد</span>
-      </div>
-      <div class="sidebar-item" onclick="showPage('report',this)" data-fa="📋 گزارش" data-en="📋 Report">
-        <span class="sidebar-icon">📋</span><span class="sidebar-label">گزارش</span>
-      </div>
-      <div class="sidebar-item" onclick="showPage('ai',this)" data-fa="🤖 دستیار" data-en="🤖 Assistant">
-        <span class="sidebar-icon">🤖</span><span class="sidebar-label">دستیار</span>
-      </div>
+      <div class="sidebar-item active" onclick="showPage('dashboard',this)" data-fa="📊 داشبورد" data-en="📊 Dashboard"><span class="sidebar-icon">📊</span><span class="sidebar-label">داشبورد</span></div>
+      <div class="sidebar-item" onclick="showPage('receipts',this)" data-fa="📸 رسیدها" data-en="📸 Receipts"><span class="sidebar-icon">📸</span><span class="sidebar-label">رسیدها</span></div>
+      <div class="sidebar-item" onclick="showPage('expenses',this)" data-fa="💸 هزینه‌ها" data-en="💸 Expenses"><span class="sidebar-icon">💸</span><span class="sidebar-label">هزینه‌ها</span></div>
+      <div class="sidebar-item" onclick="showPage('recurring',this)" data-fa="🔄 ثابت" data-en="🔄 Recurring"><span class="sidebar-icon">🔄</span><span class="sidebar-label">ثابت</span></div>
+      <div class="sidebar-item" onclick="showPage('income',this)" data-fa="💰 درآمد" data-en="💰 Income"><span class="sidebar-icon">💰</span><span class="sidebar-label">درآمد</span></div>
+      <div class="sidebar-item" onclick="showPage('report',this)" data-fa="📋 گزارش" data-en="📋 Report"><span class="sidebar-icon">📋</span><span class="sidebar-label">گزارش</span></div>
+      <div class="sidebar-item" onclick="showPage('ai',this)" data-fa="🤖 دستیار" data-en="🤖 Assistant"><span class="sidebar-icon">🤖</span><span class="sidebar-label">دستیار</span></div>
     </nav>
-
     <div class="sidebar-footer">
       <button class="lang-toggle" onclick="toggleLang()" id="appLangBtn">🇨🇦 English</button>
+      <div class="sync-indicator" id="syncIndicator">☁️ ذخیره شد</div>
       <div class="user-card">
         <div class="user-name" id="userBadge"></div>
         <div class="user-email" id="userEmail"></div>
@@ -312,9 +232,7 @@
     </div>
   </div>
 
-  <!-- MAIN -->
   <div class="main">
-
     <!-- DASHBOARD -->
     <div id="page-dashboard" class="page active">
       <div class="page-header">
@@ -322,22 +240,10 @@
         <div class="page-sub" id="dashSub">خلاصه مالی این ماه — <span id="current-month-label"></span></div>
       </div>
       <div class="stats">
-        <div class="stat stat-green">
-          <div class="stat-label" id="lbl-income">📈 درآمد این ماه</div>
-          <div class="stat-value" id="dash-income">$0</div>
-        </div>
-        <div class="stat stat-red">
-          <div class="stat-label" id="lbl-expense">📉 هزینه این ماه</div>
-          <div class="stat-value" id="dash-expense">$0</div>
-        </div>
-        <div class="stat stat-blue">
-          <div class="stat-label" id="lbl-balance">💰 مانده</div>
-          <div class="stat-value" id="dash-balance">$0</div>
-        </div>
-        <div class="stat stat-teal">
-          <div class="stat-label" id="lbl-count">🧾 تراکنش</div>
-          <div class="stat-value" id="dash-count">0</div>
-        </div>
+        <div class="stat stat-green"><div class="stat-label" id="lbl-income">📈 درآمد این ماه</div><div class="stat-value" id="dash-income">$0</div></div>
+        <div class="stat stat-red"><div class="stat-label" id="lbl-expense">📉 هزینه این ماه</div><div class="stat-value" id="dash-expense">$0</div></div>
+        <div class="stat stat-blue"><div class="stat-label" id="lbl-balance">💰 مانده</div><div class="stat-value" id="dash-balance">$0</div></div>
+        <div class="stat stat-teal"><div class="stat-label" id="lbl-count">🧾 تراکنش</div><div class="stat-value" id="dash-count">0</div></div>
       </div>
       <div class="card">
         <div class="card-title" id="dashCardTitle">هزینه‌ها بر اساس دسته‌بندی</div>
@@ -393,27 +299,11 @@
           <div class="form-group"><label class="form-label" id="expDateLbl">تاریخ</label><input class="form-input" id="exp-date" type="date"></div>
           <div class="form-group"><label class="form-label" id="expCatLbl">دسته‌بندی</label>
             <select class="form-input" id="exp-category">
-              <option value="rent">🏠 اجاره / Rent</option>
-              <option value="food">🍔 غذا / Food</option>
-              <option value="fuel">⛽ بنزین / Fuel</option>
-              <option value="phone">📱 تلفن / Phone</option>
-              <option value="insurance">🛡️ بیمه / Insurance</option>
-              <option value="maintenance">🔧 تعمیر / Maintenance</option>
-              <option value="carwash">🚿 کارواش / Car Wash</option>
-              <option value="parking">🅿️ پارکینگ / Parking</option>
-              <option value="entertainment">🎬 سرگرمی / Entertainment</option>
-              <option value="clothing">👕 پوشاک / Clothing</option>
-              <option value="health">🏥 سلامت / Health</option>
-              <option value="education">📚 آموزش / Education</option>
-              <option value="grocery">🛒 خرید / Grocery</option>
-              <option value="other">📦 سایر / Other</option>
+              <option value="rent">🏠 اجاره / Rent</option><option value="food">🍔 غذا / Food</option><option value="fuel">⛽ بنزین / Fuel</option><option value="phone">📱 تلفن / Phone</option><option value="insurance">🛡️ بیمه / Insurance</option><option value="maintenance">🔧 تعمیر / Maintenance</option><option value="carwash">🚿 کارواش / Car Wash</option><option value="parking">🅿️ پارکینگ / Parking</option><option value="entertainment">🎬 سرگرمی / Entertainment</option><option value="clothing">👕 پوشاک / Clothing</option><option value="health">🏥 سلامت / Health</option><option value="education">📚 آموزش / Education</option><option value="grocery">🛒 خرید / Grocery</option><option value="other">📦 سایر / Other</option>
             </select>
           </div>
           <div class="form-group"><label class="form-label" id="expTypeLbl">نوع</label>
-            <select class="form-input" id="exp-type">
-              <option value="personal">🏠 شخصی / Personal</option>
-              <option value="business">💼 کاری / Business (T2125)</option>
-            </select>
+            <select class="form-input" id="exp-type"><option value="personal">🏠 شخصی / Personal</option><option value="business">💼 کاری / Business (T2125)</option></select>
           </div>
           <div class="form-group"><label class="form-label" id="expNoteLbl">توضیحات</label><input class="form-input" id="exp-note" placeholder="..."></div>
         </div>
@@ -438,21 +328,10 @@
           <div class="form-group"><label class="form-label" id="recAmountLbl">مبلغ ($)</label><input class="form-input" id="rec-amount" type="number" placeholder="0.00"></div>
           <div class="form-group"><label class="form-label" id="recDayLbl">روز پرداخت</label><input class="form-input" id="rec-day" type="number" min="1" max="28" placeholder="1"></div>
           <div class="form-group"><label class="form-label" id="recCatLbl">دسته‌بندی</label>
-            <select class="form-input" id="rec-category">
-              <option value="rent">🏠 اجاره / Rent</option>
-              <option value="phone">📱 تلفن / Phone</option>
-              <option value="insurance">🛡️ بیمه / Insurance</option>
-              <option value="maintenance">🔧 لیزینگ / Lease</option>
-              <option value="entertainment">🎬 اشتراک / Subscription</option>
-              <option value="health">🏥 باشگاه / Gym</option>
-              <option value="other">📦 سایر / Other</option>
-            </select>
+            <select class="form-input" id="rec-category"><option value="rent">🏠 اجاره / Rent</option><option value="phone">📱 تلفن / Phone</option><option value="insurance">🛡️ بیمه / Insurance</option><option value="maintenance">🔧 لیزینگ / Lease</option><option value="entertainment">🎬 اشتراک / Subscription</option><option value="health">🏥 باشگاه / Gym</option><option value="other">📦 سایر / Other</option></select>
           </div>
           <div class="form-group"><label class="form-label" id="recTypeLbl">نوع</label>
-            <select class="form-input" id="rec-type">
-              <option value="personal">🏠 شخصی / Personal</option>
-              <option value="business">💼 کاری / Business</option>
-            </select>
+            <select class="form-input" id="rec-type"><option value="personal">🏠 شخصی / Personal</option><option value="business">💼 کاری / Business</option></select>
           </div>
           <div class="form-group"><label class="form-label" id="recStartLbl">از چه ماهی</label><input class="form-input" id="rec-start" type="month"></div>
         </div>
@@ -477,11 +356,7 @@
           <div class="form-group"><label class="form-label" id="incAmountLbl">مبلغ ($)</label><input class="form-input" id="inc-amount" type="number" placeholder="0.00"></div>
           <div class="form-group"><label class="form-label" id="incDateLbl">تاریخ</label><input class="form-input" id="inc-date" type="date"></div>
           <div class="form-group"><label class="form-label" id="incTypeLbl">نوع</label>
-            <select class="form-input" id="inc-type">
-              <option value="employment">👔 حقوق / Employment</option>
-              <option value="selfemployed">🚗 Self-employed</option>
-              <option value="other">📦 سایر / Other</option>
-            </select>
+            <select class="form-input" id="inc-type"><option value="employment">👔 حقوق / Employment</option><option value="selfemployed">🚗 Self-employed</option><option value="other">📦 سایر / Other</option></select>
           </div>
           <div class="form-group full"><label class="form-label" id="incNoteLbl">توضیحات</label><input class="form-input" id="inc-note" placeholder="..."></div>
         </div>
@@ -524,11 +399,15 @@
         <button class="btn btn-green" onclick="sendChat()" id="sendBtn">ارسال</button>
       </div>
     </div>
-
   </div>
 </div>
 
 <script>
+// ── SUPABASE ──
+const SUPABASE_URL='https://lvoohtbwkscbmdrtsevc.supabase.co';
+const SUPABASE_KEY='sb_publishable_YSFTa2xyCGPMdX9r_SV05w_7P2XwQqx';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
 const CAT_LABELS={fuel:"⛽ بنزین/Fuel",maintenance:"🔧 تعمیر/Maintenance",insurance:"🛡️ بیمه/Insurance",phone:"📱 تلفن/Phone",meals:"🍔 غذا/Food",carwash:"🚿 کارواش/Car Wash",parking:"🅿️ پارکینگ/Parking",other:"📦 سایر/Other",rent:"🏠 اجاره/Rent",food:"🍔 غذا/Food",entertainment:"🎬 سرگرمی/Entertainment",clothing:"👕 پوشاک/Clothing",health:"🏥 سلامت/Health",education:"📚 آموزش/Education",grocery:"🛒 خرید/Grocery"};
 const CAT_COLORS={fuel:"#F97316",maintenance:"#1565C0",insurance:"#7B1FA2",phone:"#0097A7",meals:"#F59E0B",carwash:"#1D9E75",parking:"#C2185B",other:"#546E7A",rent:"#7B1FA2",food:"#F59E0B",entertainment:"#C2185B",clothing:"#0097A7",health:"#1D9E75",education:"#1565C0",grocery:"#F97316"};
 const T2125={fuel:"Fuel",maintenance:"Maintenance & Repairs",insurance:"Insurance",phone:"Telephone & Utilities",meals:"Meals (50%)",carwash:"Other Expenses",parking:"Parking",other:"Other Expenses"};
@@ -544,6 +423,102 @@ let currentUser=null;
 let receipts=[],manualExpenses=[],incomes=[],recurringItems=[];
 let loginLang='fa',loginTab='login';
 
+function showSync(){
+  const el=document.getElementById('syncIndicator');
+  el.textContent=lang==='fa'?'☁️ ذخیره شد':'☁️ Saved';
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2000);
+}
+
+// ── AUTH ──
+async function handleAuth(){
+  const email=document.getElementById('emailInput').value.trim();
+  const pass=document.getElementById('passInput').value;
+  if(!email||!pass){showMsg('error',loginLang==='fa'?'لطفاً همه فیلدها را پر کنید':'Please fill all fields');return;}
+  showMsg('success',loginLang==='fa'?'در حال اتصال...':'Connecting...');
+  if(loginTab==='register'){
+    const name=document.getElementById('nameInput').value.trim()||email.split('@')[0];
+    const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{name}}});
+    if(error){showMsg('error',error.message);return;}
+    showMsg('success',loginLang==='fa'?'ثبت‌نام موفق! لطفاً ایمیل رو تأیید کن':'Registered! Please verify your email.');
+  }else{
+    const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+    if(error){showMsg('error',loginLang==='fa'?'ایمیل یا رمز اشتباه است':'Wrong email or password');return;}
+    const name=data.user.user_metadata?.name||email.split('@')[0];
+    await loginUser(data.user.id,email,name,false);
+  }
+}
+
+function loginDemo(){
+  currentUser={id:'demo',email:'demo@parseify.com',name:'Demo User',isDemo:true};
+  loadLocalData();
+  enterApp();
+}
+
+function showMsg(type,text){const msg=document.getElementById('loginMsg');msg.className='login-msg '+type;msg.textContent=text;}
+
+async function loginUser(uid,email,name,isDemo){
+  currentUser={id:uid,email,name,isDemo:!!isDemo};
+  await loadSupabaseData();
+  enterApp();
+}
+
+function enterApp(){
+  document.getElementById('loginWrap').style.display='none';
+  document.getElementById('appWrap').classList.add('visible');
+  document.getElementById('userBadge').textContent=currentUser.name;
+  document.getElementById('userEmail').textContent=currentUser.email;
+  lang=localStorage.getItem('lang')||'fa';
+  applyLang();
+  applyRecurring();
+  renderDashboard();
+}
+
+async function logout(){
+  if(!currentUser?.isDemo)await sb.auth.signOut();
+  currentUser=null;receipts=[];manualExpenses=[];incomes=[];recurringItems=[];
+  document.getElementById('loginWrap').style.display='flex';
+  document.getElementById('appWrap').classList.remove('visible');
+  document.getElementById('loginMsg').textContent='';
+}
+
+// ── DATA ──
+async function loadSupabaseData(){
+  const uid=currentUser.id;
+  const [r,e,i,rc]=await Promise.all([
+    sb.from('receipts').select('*').eq('user_id',uid).order('created_at',{ascending:false}),
+    sb.from('expenses').select('*').eq('user_id',uid).order('created_at',{ascending:false}),
+    sb.from('incomes').select('*').eq('user_id',uid).order('created_at',{ascending:false}),
+    sb.from('recurring').select('*').eq('user_id',uid).order('created_at',{ascending:false})
+  ]);
+  receipts=r.data||[];manualExpenses=e.data||[];incomes=i.data||[];recurringItems=rc.data||[];
+}
+
+function loadLocalData(){
+  receipts=JSON.parse(localStorage.getItem('demo_r')||'[]');
+  manualExpenses=JSON.parse(localStorage.getItem('demo_e')||'[]');
+  incomes=JSON.parse(localStorage.getItem('demo_i')||'[]');
+  recurringItems=JSON.parse(localStorage.getItem('demo_rc')||'[]');
+}
+
+function saveLocal(){
+  localStorage.setItem('demo_r',JSON.stringify(receipts));
+  localStorage.setItem('demo_e',JSON.stringify(manualExpenses));
+  localStorage.setItem('demo_i',JSON.stringify(incomes));
+  localStorage.setItem('demo_rc',JSON.stringify(recurringItems));
+}
+
+// check session on load
+sb.auth.getSession().then(async({data:{session}})=>{
+  if(session){
+    const u=session.user;
+    currentUser={id:u.id,email:u.email,name:u.user_metadata?.name||u.email.split('@')[0],isDemo:false};
+    await loadSupabaseData();
+    enterApp();
+  }
+});
+
+// ── LANG ──
 function applyLang(){
   T=TRANS[lang];
   document.documentElement.lang=lang;
@@ -552,15 +527,8 @@ function applyLang(){
   const map={dashTitle:'dashTitle',dashSub:'dashSub','lbl-income':'lbl_income','lbl-expense':'lbl_expense','lbl-balance':'lbl_balance','lbl-count':'lbl_count',dashCardTitle:'dashCardTitle',receiptsPageTitle:'receiptsPageTitle',receiptsPageSub:'receiptsPageSub',uploadBtnText:'uploadBtn',uploadHint:'uploadHint',scanningText:'scanning',receiptsTitle:'receiptsTitle',expPageTitle:'expPageTitle',expPageSub:'expPageSub',expFormTitle:'expFormTitle',expTitleLbl:'expTitleLbl',expAmountLbl:'expAmountLbl',expDateLbl:'expDateLbl',expCatLbl:'expCatLbl',expTypeLbl:'expTypeLbl',expNoteLbl:'expNoteLbl',addExpBtn:'addExpBtn',clearExpBtn:'clearExpBtn',recPageTitle:'recPageTitle',recPageSub:'recPageSub',recFormTitle:'recFormTitle',recTitleLbl:'recTitleLbl',recAmountLbl:'recAmountLbl',recDayLbl:'recDayLbl',recCatLbl:'recCatLbl',recTypeLbl:'recTypeLbl',recStartLbl:'recStartLbl',addRecBtn:'addRecBtn',recListTitle:'recListTitle',incPageTitle:'incPageTitle',incPageSub:'incPageSub',incFormTitle:'incFormTitle',incSrcLbl:'incSrcLbl',incAmountLbl:'incAmountLbl',incDateLbl:'incDateLbl',incTypeLbl:'incTypeLbl',incNoteLbl:'incNoteLbl',addIncBtn:'addIncBtn',clearIncBtn:'clearIncBtn',reportTitle:'reportTitle',reportSub:'reportSub',aiTitle:'aiTitle',aiSub:'aiSub',aiWelcome:'aiWelcome',sendBtn:'sendBtn',logoutBtn:'logoutBtn'};
   Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&T[key])el.textContent=T[key];});
   document.getElementById('appLangBtn').textContent=T.langBtn;
-  document.querySelectorAll('#sidebarNav .sidebar-item').forEach(item=>{
-    const label=item.querySelector('.sidebar-label');
-    if(label)label.textContent=item.dataset[lang]?.replace(/^[^\s]+\s/,'')||label.textContent;
-  });
-  document.querySelectorAll('#quickQuestions .quick-btn').forEach((btn,i)=>{
-    const qs=['q1','q2','q3','q4','q5'];
-    const icons=['💸','📈','⛽','💼','📊'];
-    btn.textContent=icons[i]+' '+T[qs[i]];
-  });
+  document.querySelectorAll('#sidebarNav .sidebar-item').forEach(item=>{const label=item.querySelector('.sidebar-label');if(label)label.textContent=item.dataset[lang]?.replace(/^[^\s]+\s/,'')||label.textContent;});
+  document.querySelectorAll('#quickQuestions .quick-btn').forEach((btn,i)=>{const qs=['q1','q2','q3','q4','q5'];const icons=['💸','📈','⛽','💼','📊'];btn.textContent=icons[i]+' '+T[qs[i]];});
   localStorage.setItem('lang',lang);
 }
 
@@ -588,86 +556,28 @@ function switchTab(tab){
   document.getElementById('authBtn').textContent=tab==='login'?TRANS[loginLang].tabLogin:TRANS[loginLang].tabRegister;
 }
 
-function handleAuth(){
-  const email=document.getElementById('emailInput').value.trim();
-  const pass=document.getElementById('passInput').value;
-  if(!email||!pass){showMsg('error',loginLang==='fa'?'لطفاً همه فیلدها را پر کنید':'Please fill all fields');return;}
-  const users=JSON.parse(localStorage.getItem('users')||'{}');
-  if(loginTab==='register'){
-    const name=document.getElementById('nameInput').value.trim();
-    if(users[email]){showMsg('error',loginLang==='fa'?'این ایمیل قبلاً ثبت شده':'Email already registered');return;}
-    users[email]={pass,name:name||email.split('@')[0]};
-    localStorage.setItem('users',JSON.stringify(users));
-    showMsg('success',loginLang==='fa'?'ثبت‌نام موفق!':'Registered successfully!');
-    setTimeout(()=>loginUser(email,users[email].name),1000);
-  }else{
-    if(!users[email]||users[email].pass!==pass){showMsg('error',loginLang==='fa'?'ایمیل یا رمز اشتباه است':'Wrong email or password');return;}
-    loginUser(email,users[email].name);
-  }
-}
-
-function loginDemo(){loginUser('demo@parseify.com','Demo User');}
-
-function showMsg(type,text){const msg=document.getElementById('loginMsg');msg.className='login-msg '+type;msg.textContent=text;}
-
-function loginUser(email,name){
-  currentUser={email,name};
-  localStorage.setItem('currentUser',JSON.stringify(currentUser));
-  loadData();
-  document.getElementById('loginWrap').style.display='none';
-  document.getElementById('appWrap').classList.add('visible');
-  document.getElementById('userBadge').textContent=name;
-  document.getElementById('userEmail').textContent=email;
-  lang=localStorage.getItem('lang')||'fa';
-  applyLang();
-  applyRecurring();
-  renderDashboard();
-}
-
-function logout(){
-  currentUser=null;
-  localStorage.removeItem('currentUser');
-  document.getElementById('loginWrap').style.display='flex';
-  document.getElementById('appWrap').classList.remove('visible');
-  document.getElementById('loginMsg').textContent='';
-}
-
-function loadData(){
-  const k=currentUser.email;
-  receipts=JSON.parse(localStorage.getItem(k+'_r')||'[]');
-  manualExpenses=JSON.parse(localStorage.getItem(k+'_e')||'[]');
-  incomes=JSON.parse(localStorage.getItem(k+'_i')||'[]');
-  recurringItems=JSON.parse(localStorage.getItem(k+'_rc')||'[]');
-}
-
-function save(){
-  const k=currentUser.email;
-  localStorage.setItem(k+'_r',JSON.stringify(receipts));
-  localStorage.setItem(k+'_e',JSON.stringify(manualExpenses));
-  localStorage.setItem(k+'_i',JSON.stringify(incomes));
-  localStorage.setItem(k+'_rc',JSON.stringify(recurringItems));
-}
-
+// ── DATES ──
 const now=new Date();
 document.getElementById('exp-date').value=now.toISOString().split('T')[0];
 document.getElementById('inc-date').value=now.toISOString().split('T')[0];
 document.getElementById('rec-start').value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
 document.getElementById('current-month-label').textContent=now.toLocaleDateString('fa-IR',{year:'numeric',month:'long'});
 
-const saved=localStorage.getItem('currentUser');
-if(saved){try{const u=JSON.parse(saved);loginUser(u.email,u.name);}catch(e){}}
-
+// ── RECURRING ──
 function applyRecurring(){
   const ym=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
   recurringItems.forEach(r=>{
     if(!r.active)return;
-    if(!manualExpenses.some(e=>e.recurringId===r.id&&e.date.startsWith(ym))){
-      manualExpenses.push({id:Date.now()+Math.random(),title:r.title,amount:r.amount,date:`${ym}-${String(r.day||1).padStart(2,'0')}`,category:r.category,type:r.type,note:'🔄 Auto',recurringId:r.id,source:'recurring'});
+    if(!manualExpenses.some(e=>e.recurring_id===r.id&&e.date&&e.date.startsWith(ym))){
+      const newExp={id:Date.now()+Math.random(),title:r.title,amount:r.amount,date:`${ym}-${String(r.day||1).padStart(2,'0')}`,category:r.category,type:r.type,note:'🔄 Auto',recurring_id:r.id,source:'recurring',user_id:currentUser.id};
+      manualExpenses.unshift(newExp);
+      if(!currentUser.isDemo)sb.from('expenses').insert(newExp);
     }
   });
-  save();
+  if(currentUser.isDemo)saveLocal();
 }
 
+// ── PAGES ──
 function showPage(name,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.sidebar-item').forEach(b=>b.classList.remove('active'));
@@ -700,13 +610,10 @@ function renderDashboard(){
   allExp.forEach(r=>{const c=r.category||'other';cats[c]=(cats[c]||0)+parseFloat(r.amount||0);});
   const bd=document.getElementById('dash-breakdown');
   if(!Object.keys(cats).length){bd.innerHTML=`<div style="color:#AAA;font-size:13px;text-align:center;padding:16px">${T.empty_expenses}</div>`;return;}
-  bd.innerHTML=Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>`
-    <div class="report-row">
-      <div class="report-label"><span class="report-dot" style="background:${CAT_COLORS[cat]||'#546E7A'}"></span>${CAT_LABELS[cat]||cat}</div>
-      <div class="report-value">$${amt.toFixed(2)}</div>
-    </div>`).join('');
+  bd.innerHTML=Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>`<div class="report-row"><div class="report-label"><span class="report-dot" style="background:${CAT_COLORS[cat]||'#546E7A'}"></span>${CAT_LABELS[cat]||cat}</div><div class="report-value">$${amt.toFixed(2)}</div></div>`).join('');
 }
 
+// ── RECEIPTS ──
 async function processFile(file){
   if(!file?.type.startsWith('image/'))return;
   document.getElementById('uploadContent').classList.add('hidden');
@@ -718,8 +625,11 @@ async function processFile(file){
       const res=await fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:dataUrl.split(',')[1],mimeType:file.type})});
       const data=await res.json();
       if(data.error)throw new Error(data.error);
-      receipts.unshift({id:Date.now(),...data,img:dataUrl,source:'scan'});
-      save();renderReceipts();renderDashboard();
+      const newReceipt={id:Date.now(),...data,img:dataUrl,source:'scan',user_id:currentUser.id};
+      receipts.unshift(newReceipt);
+      if(!currentUser.isDemo){const{img,...noImg}=newReceipt;await sb.from('receipts').insert(noImg);}
+      else saveLocal();
+      showSync();renderReceipts();renderDashboard();
       document.getElementById('errorBox').classList.add('hidden');
     }catch(err){
       const box=document.getElementById('errorBox');box.textContent='⚠️ '+err.message;box.classList.remove('hidden');
@@ -738,17 +648,24 @@ function renderReceipts(){
   list.innerHTML=receipts.map(r=>{const c=CAT_COLORS[r.category]||'#546E7A';return`<div class="item-card" style="border-right-color:${c}"><div class="item-info"><div class="item-header"><span class="item-title">${r.vendor||'—'}</span><span class="item-badge" style="background:${c}18;color:${c}">${CAT_LABELS[r.category]||r.category}</span></div><div class="item-grid"><div class="item-field"><div class="field-label">${lang==='fa'?'تاریخ':'Date'}</div><div class="field-value">${r.date}</div></div><div class="item-field"><div class="field-label">${lang==='fa'?'مبلغ':'Amount'}</div><div class="field-value">$${r.amount}</div></div><div class="item-field"><div class="field-label">${lang==='fa'?'مالیات':'Tax'}</div><div class="field-value">$${r.tax}</div></div><div class="item-field"><div class="field-label">${lang==='fa'?'جمع کل':'Total'}</div><div class="field-value">$${r.total}</div></div></div></div>${r.img?`<img src="${r.img}" class="item-thumb" alt="">`:''}`;}).join('');
 }
 
-function addManualExpense(){
+// ── EXPENSES ──
+async function addManualExpense(){
   const title=document.getElementById('exp-title').value.trim();
   const amount=document.getElementById('exp-amount').value;
   const date=document.getElementById('exp-date').value;
   if(!title||!amount||!date){alert(lang==='fa'?'لطفاً همه فیلدها را پر کنید':'Please fill all fields');return;}
-  manualExpenses.unshift({id:Date.now(),title,amount:parseFloat(amount).toFixed(2),date,category:document.getElementById('exp-category').value,type:document.getElementById('exp-type').value,note:document.getElementById('exp-note').value,source:'manual'});
-  save();renderManualExpenses();renderDashboard();
+  const newExp={id:Date.now(),title,amount:parseFloat(amount).toFixed(2),date,category:document.getElementById('exp-category').value,type:document.getElementById('exp-type').value,note:document.getElementById('exp-note').value,source:'manual',user_id:currentUser.id};
+  manualExpenses.unshift(newExp);
+  if(!currentUser.isDemo)await sb.from('expenses').insert(newExp);else saveLocal();
+  showSync();renderManualExpenses();renderDashboard();
   clearForm('exp-title','exp-amount','exp-note');
 }
 
-function deleteExpense(id){manualExpenses=manualExpenses.filter(e=>e.id!==id);save();renderManualExpenses();renderDashboard();}
+async function deleteExpense(id){
+  manualExpenses=manualExpenses.filter(e=>e.id!==id);
+  if(!currentUser.isDemo)await sb.from('expenses').delete().eq('id',id);else saveLocal();
+  showSync();renderManualExpenses();renderDashboard();
+}
 
 function renderManualExpenses(){
   const list=document.getElementById('manual-expenses-list');
@@ -757,17 +674,30 @@ function renderManualExpenses(){
   list.innerHTML=items.map(e=>{const c=CAT_COLORS[e.category]||'#546E7A';return`<div class="item-card" style="border-right-color:${c}"><div class="item-info"><div class="item-header"><span class="item-title">${e.title}</span><span class="item-badge" style="background:${c}18;color:${c}">${CAT_LABELS[e.category]||e.category}</span></div><div class="item-grid"><div class="item-field"><div class="field-label">${lang==='fa'?'تاریخ':'Date'}</div><div class="field-value">${e.date}</div></div><div class="item-field"><div class="field-label">${lang==='fa'?'مبلغ':'Amount'}</div><div class="field-value">$${e.amount}</div></div></div></div><button onclick="deleteExpense(${e.id})" style="background:none;border:none;color:#E53935;cursor:pointer;font-size:18px;flex-shrink:0;padding:4px">🗑</button></div>`;}).join('');
 }
 
-function addRecurring(){
+// ── RECURRING ──
+async function addRecurring(){
   const title=document.getElementById('rec-title').value.trim();
   const amount=document.getElementById('rec-amount').value;
   if(!title||!amount){alert(lang==='fa'?'لطفاً عنوان و مبلغ را وارد کنید':'Please enter title and amount');return;}
-  recurringItems.unshift({id:Date.now(),title,amount:parseFloat(amount).toFixed(2),day:parseInt(document.getElementById('rec-day').value||1),category:document.getElementById('rec-category').value,type:document.getElementById('rec-type').value,start:document.getElementById('rec-start').value,active:true});
-  save();applyRecurring();renderRecurring();renderDashboard();
+  const newRec={id:Date.now(),title,amount:parseFloat(amount).toFixed(2),day:parseInt(document.getElementById('rec-day').value||1),category:document.getElementById('rec-category').value,type:document.getElementById('rec-type').value,start:document.getElementById('rec-start').value,active:true,user_id:currentUser.id};
+  recurringItems.unshift(newRec);
+  if(!currentUser.isDemo)await sb.from('recurring').insert(newRec);else saveLocal();
+  showSync();applyRecurring();renderRecurring();renderDashboard();
   document.getElementById('rec-title').value='';document.getElementById('rec-amount').value='';
 }
 
-function toggleRecurring(id){const item=recurringItems.find(r=>r.id===id);if(item)item.active=!item.active;save();renderRecurring();}
-function deleteRecurring(id){recurringItems=recurringItems.filter(r=>r.id!==id);manualExpenses=manualExpenses.filter(e=>e.recurringId!==id);save();renderRecurring();renderDashboard();}
+async function toggleRecurring(id){
+  const item=recurringItems.find(r=>r.id===id);
+  if(item){item.active=!item.active;if(!currentUser.isDemo)await sb.from('recurring').update({active:item.active}).eq('id',id);else saveLocal();showSync();}
+  renderRecurring();
+}
+
+async function deleteRecurring(id){
+  recurringItems=recurringItems.filter(r=>r.id!==id);
+  manualExpenses=manualExpenses.filter(e=>e.recurring_id!==id);
+  if(!currentUser.isDemo){await sb.from('recurring').delete().eq('id',id);await sb.from('expenses').delete().eq('recurring_id',id);}else saveLocal();
+  showSync();renderRecurring();renderDashboard();
+}
 
 function renderRecurring(){
   const list=document.getElementById('recurring-list');
@@ -775,17 +705,24 @@ function renderRecurring(){
   list.innerHTML=recurringItems.map(r=>{const c=CAT_COLORS[r.category]||'#546E7A';return`<div class="item-card" style="border-right-color:${r.active?c:'#DDD'}"><div class="item-info"><div class="item-header"><span class="item-title" style="color:${r.active?'#0D3B7A':'#AAA'}">${r.title}</span><span class="recurring-badge">🔄 ${lang==='fa'?'ماهانه':'Monthly'}</span><span class="item-badge" style="background:${c}18;color:${c}">${CAT_LABELS[r.category]||r.category}</span></div><div class="item-grid"><div class="item-field"><div class="field-label">${lang==='fa'?'مبلغ':'Amount'}</div><div class="field-value">$${r.amount}</div></div><div class="item-field"><div class="field-label">${lang==='fa'?'روز':'Day'}</div><div class="field-value">${lang==='fa'?'روز':'Day'} ${r.day}</div></div></div></div><div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0"><button onclick="toggleRecurring(${r.id})" class="btn btn-sm ${r.active?'btn-outline':'btn-green'}">${r.active?'⏸':'▶️'}</button><button onclick="deleteRecurring(${r.id})" style="background:none;border:none;color:#E53935;cursor:pointer;font-size:18px;padding:4px">🗑</button></div></div>`;}).join('');
 }
 
-function addIncome(){
+// ── INCOME ──
+async function addIncome(){
   const title=document.getElementById('inc-title').value.trim();
   const amount=document.getElementById('inc-amount').value;
   const date=document.getElementById('inc-date').value;
   if(!title||!amount||!date){alert(lang==='fa'?'لطفاً همه فیلدها را پر کنید':'Please fill all fields');return;}
-  incomes.unshift({id:Date.now(),title,amount:parseFloat(amount).toFixed(2),date,type:document.getElementById('inc-type').value,note:document.getElementById('inc-note').value});
-  save();renderIncomes();renderDashboard();
+  const newInc={id:Date.now(),title,amount:parseFloat(amount).toFixed(2),date,type:document.getElementById('inc-type').value,note:document.getElementById('inc-note').value,user_id:currentUser.id};
+  incomes.unshift(newInc);
+  if(!currentUser.isDemo)await sb.from('incomes').insert(newInc);else saveLocal();
+  showSync();renderIncomes();renderDashboard();
   clearForm('inc-title','inc-amount','inc-note');
 }
 
-function deleteIncome(id){incomes=incomes.filter(e=>e.id!==id);save();renderIncomes();renderDashboard();}
+async function deleteIncome(id){
+  incomes=incomes.filter(e=>e.id!==id);
+  if(!currentUser.isDemo)await sb.from('incomes').delete().eq('id',id);else saveLocal();
+  showSync();renderIncomes();renderDashboard();
+}
 
 function renderIncomes(){
   const list=document.getElementById('income-list');
@@ -793,6 +730,7 @@ function renderIncomes(){
   list.innerHTML=incomes.map(e=>`<div class="item-card" style="border-right-color:#1D9E75"><div class="item-info"><div class="item-header"><span class="item-title">${e.title}</span><span class="item-badge" style="background:#EAF3DE;color:#0F6E56">💰 ${lang==='fa'?'درآمد':'Income'}</span></div><div class="item-grid"><div class="item-field"><div class="field-label">${lang==='fa'?'تاریخ':'Date'}</div><div class="field-value">${e.date}</div></div><div class="item-field"><div class="field-label">${lang==='fa'?'مبلغ':'Amount'}</div><div class="field-value" style="color:#1D9E75">$${e.amount}</div></div></div></div><button onclick="deleteIncome(${e.id})" style="background:none;border:none;color:#E53935;cursor:pointer;font-size:18px;flex-shrink:0;padding:4px">🗑</button></div>`).join('');
 }
 
+// ── REPORT ──
 function renderReport(filterMonth=null){
   const allExp=getAllExpenses();
   const months=[...new Set([...allExp,...incomes].map(r=>r.date?.substring(0,7)))].filter(Boolean).sort().reverse();
@@ -833,6 +771,7 @@ function renderReport(filterMonth=null){
     </div>`;
 }
 
+// ── AI ──
 async function sendChat(){const input=document.getElementById('chatInput');const q=input.value.trim();if(!q)return;input.value='';askAI(q);}
 
 async function askAI(question){
@@ -840,14 +779,7 @@ async function askAI(question){
   box.innerHTML+=`<div class="chat-msg chat-user">${question}</div>`;
   box.scrollTop=box.scrollHeight;
   const allExp=getAllExpenses();
-  const summary={
-    totalExpenses:allExp.reduce((s,r)=>s+parseFloat(r.amount||0),0).toFixed(2),
-    totalIncome:incomes.reduce((s,r)=>s+parseFloat(r.amount||0),0).toFixed(2),
-    byCategory:Object.entries(allExp.reduce((acc,r)=>{const c=CAT_LABELS[r.category]||r.category||'Other';acc[c]=(acc[c]||0)+parseFloat(r.amount||0);return acc;},{})).map(([k,v])=>`${k}: $${v.toFixed(2)}`).join(', '),
-    expenses:allExp.slice(0,30).map(r=>`${r.date}: ${r.title||r.vendor||'—'} $${r.amount}`).join('\n'),
-    incomeList:incomes.slice(0,10).map(r=>`${r.date}: ${r.title} $${r.amount}`).join('\n'),
-    recurring:recurringItems.filter(r=>r.active).map(r=>`${r.title}: $${r.amount}/month`).join(', ')
-  };
+  const summary={totalExpenses:allExp.reduce((s,r)=>s+parseFloat(r.amount||0),0).toFixed(2),totalIncome:incomes.reduce((s,r)=>s+parseFloat(r.amount||0),0).toFixed(2),byCategory:Object.entries(allExp.reduce((acc,r)=>{const c=CAT_LABELS[r.category]||r.category||'Other';acc[c]=(acc[c]||0)+parseFloat(r.amount||0);return acc;},{})).map(([k,v])=>`${k}: $${v.toFixed(2)}`).join(', '),expenses:allExp.slice(0,30).map(r=>`${r.date}: ${r.title||r.vendor||'—'} $${r.amount}`).join('\n'),incomeList:incomes.slice(0,10).map(r=>`${r.date}: ${r.title} $${r.amount}`).join('\n'),recurring:recurringItems.filter(r=>r.active).map(r=>`${r.title}: $${r.amount}/month`).join(', ')};
   const lid='l'+Date.now();
   box.innerHTML+=`<div class="chat-msg chat-ai" id="${lid}"><div class="spinner"></div></div>`;
   box.scrollTop=box.scrollHeight;
@@ -859,6 +791,7 @@ async function askAI(question){
   box.scrollTop=box.scrollHeight;
 }
 
+// ── EXPORT ──
 function exportCSV(l){
   const isFa=l==='fa';
   const h=isFa?['تاریخ','فروشنده','مبلغ','مالیات','جمع کل','دسته‌بندی']:['Date','Vendor','Amount','Tax','Total','Category'];

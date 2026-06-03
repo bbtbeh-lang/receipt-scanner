@@ -433,7 +433,83 @@
           <div class="form-group"><label class="form-label">تاریخ</label><input class="form-input" id="exp-date" type="date"></div>
           <div class="form-group"><label class="form-label">دسته‌بندی</label>
             <select class="form-input" id="exp-category">
-              <option value="rent">🏠 اجاره</option><option value="food">🍔 غذا</option><option value="fuel">⛽ بنزین</option><option value="phone">📱 تلفن</option><option value="insurance">🛡️ بیمه</option><option value="maintenance">🔧 تعمیر</option><option value="carwash">🚿 کارواش</option><option value="parking">🅿️ پارکینگ</option><option value="entertainment">🎬 سرگرمی</option><option value="clothing">👕 پوشاک</option><option value="health">🏥 سلامت</option><option value="education">📚 آموزش</option><option value="grocery">🛒 خرید</option><option value="other">📦 سایر</option>
+              <optgroup label="🏠 مسکن">
+                <option value="rent">🏠 اجاره/مورتگیج</option>
+                <option value="electricity">💡 برق، آب، گاز</option>
+                <option value="internet">🌐 اینترنت</option>
+                <option value="phone">📱 تلفن</option>
+                <option value="home_repair">🔨 تعمیرات خانه</option>
+                <option value="furniture">🛋️ وسایل خانه</option>
+              </optgroup>
+              <optgroup label="🚗 ماشین">
+                <option value="fuel">⛽ بنزین</option>
+                <option value="maintenance">🔧 تعمیر ماشین</option>
+                <option value="car_insurance">🛡️ بیمه ماشین</option>
+                <option value="tire">🔄 لاستیک</option>
+                <option value="parking">🅿️ پارکینگ</option>
+                <option value="carwash">🚿 کارواش</option>
+                <option value="transit">🚌 حمل‌ونقل عمومی</option>
+                <option value="uber">🚗 Uber/Taxi</option>
+              </optgroup>
+              <optgroup label="🛒 خرید و غذا">
+                <option value="grocery">🛒 Grocery</option>
+                <option value="restaurant">🍽️ رستوران</option>
+                <option value="cafe">☕ کافه</option>
+                <option value="delivery">🛵 DoorDash/UberEats</option>
+              </optgroup>
+              <optgroup label="🏥 سلامت">
+                <option value="hospital">🏥 بیمارستان/کلینیک</option>
+                <option value="doctor">👨‍⚕️ دکتر</option>
+                <option value="dentist">🦷 دندانپزشک</option>
+                <option value="optometrist">👁️ چشم‌پزشک</option>
+                <option value="pharmacy">💊 دارو</option>
+                <option value="health_insurance">🛡️ بیمه سلامت</option>
+                <option value="gym">🏋️ باشگاه</option>
+                <option value="therapy">🧘 روانپزشک/مشاور</option>
+              </optgroup>
+              <optgroup label="👕 پوشاک">
+                <option value="clothing">👕 لباس و کفش</option>
+                <option value="salon">💇 آرایشگاه</option>
+                <option value="personal_care">🧴 بهداشت</option>
+              </optgroup>
+              <optgroup label="🎬 تفریح">
+                <option value="entertainment">🎬 سرگرمی</option>
+                <option value="streaming">📺 Netflix/Disney+</option>
+                <option value="music">🎵 Spotify/Music</option>
+                <option value="travel">✈️ سفر</option>
+                <option value="hotel">🏨 هتل</option>
+                <option value="games">🎮 بازی</option>
+              </optgroup>
+              <optgroup label="📚 تحصیل">
+                <option value="education">📚 مدرسه/دانشگاه</option>
+                <option value="books">📖 کتاب</option>
+                <option value="online_course">💻 دوره آنلاین</option>
+                <option value="resp">🎓 RESP</option>
+              </optgroup>
+              <optgroup label="🐾 حیوان خانگی">
+                <option value="pet_food">🐾 غذای حیوان</option>
+                <option value="vet">🏥 دامپزشک</option>
+                <option value="pet_grooming">✂️ آرایش حیوان</option>
+              </optgroup>
+              <optgroup label="👶 بچه‌ها">
+                <option value="daycare">👶 Daycare/مهد</option>
+                <option value="school_supplies">🎒 لوازم مدرسه</option>
+                <option value="kids_activities">⚽ فعالیت بچه‌ها</option>
+                <option value="kids_clothing">👗 لباس بچه</option>
+              </optgroup>
+              <optgroup label="💰 مالی">
+                <option value="rrsp">💰 RRSP/TFSA</option>
+                <option value="loan">💳 بازپرداخت وام</option>
+                <option value="life_insurance">🛡️ بیمه عمر</option>
+                <option value="bank_fee">🏦 کارمزد بانک</option>
+              </optgroup>
+              <optgroup label="🎁 متفرقه">
+                <option value="gift">🎁 هدیه</option>
+                <option value="charity">❤️ خیریه</option>
+                <option value="subscription">📦 اشتراک</option>
+                <option value="amazon">📦 خرید آنلاین</option>
+                <option value="other">📦 سایر (توضیح در یادداشت)</option>
+              </optgroup>
             </select>
           </div>
           <div class="form-group"><label class="form-label">نوع</label>
@@ -614,9 +690,58 @@ const SUPABASE_KEY='sb_publishable_YSFTa2xyCGPMdX9r_SV05w_7P2XwQqx';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 // ── CONSTANTS ──
-const CAT_LABELS={fuel:"⛽ بنزین",maintenance:"🔧 تعمیر",insurance:"🛡️ بیمه",phone:"📱 تلفن",meals:"🍔 غذا",carwash:"🚿 کارواش",parking:"🅿️ پارکینگ",other:"📦 سایر",rent:"🏠 اجاره",food:"🍔 غذا",entertainment:"🎬 سرگرمی",clothing:"👕 پوشاک",health:"🏥 سلامت",education:"📚 آموزش",grocery:"🛒 خرید"};
-const CAT_COLORS={fuel:"#F97316",maintenance:"#1565C0",insurance:"#7B1FA2",phone:"#0097A7",meals:"#F59E0B",carwash:"#1D9E75",parking:"#C2185B",other:"#546E7A",rent:"#7B1FA2",food:"#F59E0B",entertainment:"#C2185B",clothing:"#0097A7",health:"#1D9E75",education:"#1565C0",grocery:"#F97316"};
-const T2125={fuel:"Fuel",maintenance:"Maintenance & Repairs",insurance:"Insurance",phone:"Telephone & Utilities",meals:"Meals (50%)",carwash:"Other Expenses",parking:"Parking",other:"Other Expenses",rent:"Rent",grocery:"Supplies",food:"Meals (50%)"};
+const CAT_LABELS={
+  // مسکن
+  rent:"🏠 اجاره/مورتگیج",electricity:"💡 برق و آب و گاز",internet:"🌐 اینترنت",phone:"📱 تلفن",home_repair:"🔨 تعمیرات خانه",furniture:"🛋️ وسایل خانه",
+  // ماشین
+  fuel:"⛽ بنزین",maintenance:"🔧 تعمیر ماشین",car_insurance:"🛡️ بیمه ماشین",tire:"🔄 لاستیک",parking:"🅿️ پارکینگ",carwash:"🚿 کارواش",transit:"🚌 حمل‌ونقل عمومی",uber:"🚗 Uber/Taxi",
+  // خرید و غذا
+  grocery:"🛒 Grocery",restaurant:"🍽️ رستوران",cafe:"☕ کافه",delivery:"🛵 DoorDash/UberEats",
+  // سلامت
+  hospital:"🏥 بیمارستان/کلینیک",doctor:"👨‍⚕️ دکتر",dentist:"🦷 دندانپزشک",optometrist:"👁️ چشم‌پزشک",pharmacy:"💊 دارو",health_insurance:"🛡️ بیمه سلامت",gym:"🏋️ باشگاه",therapy:"🧘 روانپزشک/مشاور",
+  // پوشاک
+  clothing:"👕 لباس و کفش",salon:"💇 آرایشگاه",personal_care:"🧴 بهداشت",
+  // تفریح
+  entertainment:"🎬 سرگرمی",streaming:"📺 Netflix/Disney+",music:"🎵 Spotify/Music",travel:"✈️ سفر",hotel:"🏨 هتل",games:"🎮 بازی",
+  // تحصیل
+  education:"📚 مدرسه/دانشگاه",books:"📖 کتاب",online_course:"💻 دوره آنلاین",resp:"🎓 RESP",
+  // حیوان خانگی
+  pet_food:"🐾 غذای حیوان",vet:"🏥 دامپزشک",pet_grooming:"✂️ آرایش حیوان",
+  // بچه‌ها
+  daycare:"👶 Daycare/مهد",school_supplies:"🎒 لوازم مدرسه",kids_activities:"⚽ فعالیت بچه‌ها",kids_clothing:"👗 لباس بچه",
+  // مالی
+  rrsp:"💰 RRSP/TFSA",loan:"💳 بازپرداخت وام",life_insurance:"🛡️ بیمه عمر",bank_fee:"🏦 کارمزد بانک",
+  // متفرقه
+  gift:"🎁 هدیه",charity:"❤️ خیریه",subscription:"📦 اشتراک",amazon:"📦 خرید آنلاین",food:"🍔 غذا",insurance:"🛡️ بیمه",meals:"🍔 وعده غذایی",
+  other:"📦 سایر"
+};
+const CAT_COLORS={
+  rent:"#7B1FA2",electricity:"#F59E0B",internet:"#0097A7",phone:"#0097A7",home_repair:"#795548",furniture:"#795548",
+  fuel:"#F97316",maintenance:"#1565C0",car_insurance:"#7B1FA2",tire:"#546E7A",parking:"#C2185B",carwash:"#1D9E75",transit:"#0097A7",uber:"#000000",
+  grocery:"#F97316",restaurant:"#E91E63",cafe:"#795548",delivery:"#FF5722",
+  hospital:"#E53935",doctor:"#E53935",dentist:"#E53935",optometrist:"#E53935",pharmacy:"#E53935",health_insurance:"#7B1FA2",gym:"#1D9E75",therapy:"#9C27B0",
+  clothing:"#0097A7",salon:"#E91E63",personal_care:"#E91E63",
+  entertainment:"#C2185B",streaming:"#E50914",music:"#1DB954",travel:"#1565C0",hotel:"#1565C0",games:"#7B1FA2",
+  education:"#1565C0",books:"#1565C0",online_course:"#1565C0",resp:"#1565C0",
+  pet_food:"#FF8F00",vet:"#FF8F00",pet_grooming:"#FF8F00",
+  daycare:"#F06292",school_supplies:"#F06292",kids_activities:"#F06292",kids_clothing:"#F06292",
+  rrsp:"#1D9E75",loan:"#E53935",life_insurance:"#7B1FA2",bank_fee:"#546E7A",
+  gift:"#E91E63",charity:"#E53935",subscription:"#546E7A",amazon:"#FF9900",
+  food:"#F59E0B",insurance:"#7B1FA2",meals:"#F59E0B",other:"#546E7A"
+};
+const T2125={
+  fuel:"Fuel & Oil",maintenance:"Maintenance & Repairs",car_insurance:"Insurance",phone:"Telephone & Utilities",
+  meals:"Meals & Entertainment (50%)",carwash:"Other Expenses",parking:"Parking",
+  rent:"Rent",grocery:"Supplies & Materials",food:"Meals (50%)",
+  internet:"Telephone & Utilities",electricity:"Heat, Light, Water",
+  home_repair:"Repairs & Maintenance",health_insurance:"Insurance",
+  delivery:"Other Expenses",tire:"Maintenance & Repairs",
+  transit:"Travel & Transportation",uber:"Travel & Transportation",
+  bank_fee:"Bank Charges",life_insurance:"Insurance",
+  online_course:"Training & Education",education:"Training & Education",
+  subscription:"Other Expenses",advertising:"Advertising",
+  other:"Other Expenses"
+};
 
 // ── STATE ──
 let lang=localStorage.getItem('lang')||'fa';

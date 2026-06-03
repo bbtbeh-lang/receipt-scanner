@@ -298,6 +298,35 @@
   </div>
 </div>
 
+<!-- ══════════════ DEMO SETUP ══════════════ -->
+<div id="demoSetupWrap" style="display:none;min-height:100vh;align-items:center;justify-content:center;padding:16px;background:linear-gradient(135deg,#EAF3DE 0%,#E6F1FB 100%)">
+  <div style="background:#fff;border:0.5px solid #D4EAFA;border-radius:20px;padding:36px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(29,158,117,.08)">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:40px;margin-bottom:8px">🚀</div>
+      <div style="font-size:18px;font-weight:700;color:#0D3B7A;margin-bottom:6px">ورود آزمایشی</div>
+      <div style="font-size:13px;color:#888">نوع استفاده رو انتخاب کن</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <button onclick="startDemo('family')" style="padding:16px;border:2px solid #D4EAFA;border-radius:14px;background:#F4F8FC;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;color:#0D3B7A;text-align:right;transition:all .2s" onmouseover="this.style.borderColor='#1D9E75';this.style.background='#EAF3DE'" onmouseout="this.style.borderColor='#D4EAFA';this.style.background='#F4F8FC'">
+        <div style="font-size:28px;margin-bottom:4px">🏠</div>
+        <div>خانواده</div>
+        <div style="font-size:11px;color:#888;font-weight:400;margin-top:2px">مدیریت هزینه‌های خانگی</div>
+      </button>
+      <button onclick="startDemo('business')" style="padding:16px;border:2px solid #D4EAFA;border-radius:14px;background:#F4F8FC;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;color:#0D3B7A;text-align:right;transition:all .2s" onmouseover="this.style.borderColor='#1565C0';this.style.background='#E6F1FB'" onmouseout="this.style.borderColor='#D4EAFA';this.style.background='#F4F8FC'">
+        <div style="font-size:28px;margin-bottom:4px">💼</div>
+        <div>کسب‌وکار</div>
+        <div style="font-size:11px;color:#888;font-weight:400;margin-top:2px">فروش، سود و زیان، T2125</div>
+      </button>
+      <button onclick="startDemo('both')" style="padding:16px;border:2px solid #D4EAFA;border-radius:14px;background:#F4F8FC;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;color:#0D3B7A;text-align:right;transition:all .2s" onmouseover="this.style.borderColor='#F97316';this.style.background='#FFF3E0'" onmouseout="this.style.borderColor='#D4EAFA';this.style.background='#F4F8FC'">
+        <div style="font-size:28px;margin-bottom:4px">🏠💼</div>
+        <div>هر دو</div>
+        <div style="font-size:11px;color:#888;font-weight:400;margin-top:2px">خانواده + کسب‌وکار</div>
+      </button>
+    </div>
+    <button onclick="document.getElementById('demoSetupWrap').style.display='none';document.getElementById('loginWrap').style.display='flex'" style="width:100%;margin-top:12px;padding:10px;border:1px solid #D4EAFA;border-radius:10px;background:none;font-family:inherit;font-size:12px;color:#888;cursor:pointer">← برگشت</button>
+  </div>
+</div>
+
 <!-- ══════════════ APP ══════════════ -->
 <div class="app" id="appWrap">
   <div class="sidebar">
@@ -652,9 +681,17 @@ async function handleAuth(){
 }
 
 function loginDemo(){
+  // نشون بده صفحه انتخاب نوع
+  document.getElementById('loginWrap').style.display='none';
+  document.getElementById('demoSetupWrap').style.display='flex';
+}
+
+function startDemo(mode){
   currentUser={id:'demo',email:'demo@parseify.com',name:'Demo User',isDemo:true};
-  userMode='both';
-  userProfile={name:'Demo User',bizName:'Bakery Demo',bizType:'bakery',bizDesc:'شیرینی خانگی',budget:{food:300,fuel:150,grocery:400,entertainment:100,health:100,other:200}};
+  userMode=mode;
+  const isBiz=(mode==='business'||mode==='both');
+  userProfile={name:'Demo User',bizName:isBiz?'My Business':'',bizType:isBiz?'other':'',bizDesc:'',budget:{food:300,fuel:150,grocery:400,entertainment:100,health:100,other:200}};
+  document.getElementById('demoSetupWrap').style.display='none';
   loadLocalData();enterApp();
 }
 

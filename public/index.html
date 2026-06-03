@@ -651,6 +651,16 @@ async function processFile(file){
     const res=await fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:base64,mimeType})});
     const data=await res.json();
     if(data.error)throw new Error(data.error);
+
+    // تشخیص رسید تکراری
+    const isDuplicate=receipts.some(r=>r.vendor===data.vendor&&r.date===data.date&&r.total===data.total);
+    if(isDuplicate){
+      const box=document.getElementById('errorBox');
+      box.textContent=lang==='fa'?'⚠️ این رسید قبلاً ثبت شده!':'⚠️ This receipt was already scanned!';
+      box.classList.remove('hidden');
+      return;
+    }
+
     const dataUrl='data:'+mimeType+';base64,'+base64;
     const newReceipt={id:Date.now(),...data,img:dataUrl,source:'scan',user_id:currentUser.id};
     receipts.unshift(newReceipt);

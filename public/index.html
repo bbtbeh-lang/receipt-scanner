@@ -213,6 +213,17 @@
     .recurring-badge{background:#E6F1FB;color:#1565C0;border-radius:20px;padding:3px 9px;font-size:11px;font-weight:500}
     .hidden{display:none}
 
+    /* ── CONFIRMATION MODAL ── */
+    .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:16px}
+    .modal-overlay.show{display:flex}
+    .modal-card{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto}
+    .modal-title{font-size:17px;font-weight:700;color:#0D3B7A;margin-bottom:6px}
+    .modal-sub{font-size:12px;color:#888;margin-bottom:18px}
+    .modal-actions{display:flex;gap:10px;margin-top:18px}
+    .scan-type-selector{display:flex;gap:8px;margin-bottom:16px}
+    .scan-type-btn{flex:1;padding:10px;border:2px solid #D4EAFA;border-radius:12px;background:#F4F8FC;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:#888;text-align:center;transition:all .2s}
+    .scan-type-btn.active{border-color:#1D9E75;background:#EAF3DE;color:#0F6E56}
+
     /* ── TABS ── */
     .tab-bar{display:flex;background:#F4F8FC;border-radius:12px;padding:4px;margin-bottom:16px;gap:4px}
     .tab-btn{flex:1;padding:8px;border:none;background:none;border-radius:9px;font-family:inherit;font-size:12px;cursor:pointer;color:#888;font-weight:500;transition:all .2s}
@@ -295,6 +306,145 @@
       <button class="login-btn login-btn-blue" onclick="loginDemo()" id="demoBtn">🚀 ورود آزمایشی</button>
     </div>
     <div id="loginMsg"></div>
+  </div>
+</div>
+
+<!-- ══════════════ SCAN CONFIRMATION MODAL ══════════════ -->
+<div class="modal-overlay" id="scanModal">
+  <div class="modal-card">
+    <div class="modal-title">🧾 تأیید اطلاعات رسید</div>
+    <div class="modal-sub">اطلاعات خوانده شده را بررسی و در صورت نیاز ویرایش کنید</div>
+
+    <div class="scan-type-selector">
+      <button class="scan-type-btn active" onclick="setScanType('expense')" id="scanTypeExpense">💸 هزینه</button>
+      <button class="scan-type-btn" onclick="setScanType('income')" id="scanTypeIncome">💰 درآمد</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group" id="scanVendorGroup">
+        <label class="form-label" id="scanVendorLabel">نام فروشگاه</label>
+        <input class="form-input" id="scanVendor" placeholder="نام فروشگاه">
+      </div>
+      <div class="form-group">
+        <label class="form-label">تاریخ</label>
+        <input class="form-input" id="scanDate" type="date">
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="scanAmountLabel">مبلغ ($)</label>
+        <input class="form-input" id="scanAmount" type="number" placeholder="0.00">
+      </div>
+      <div class="form-group" id="scanTaxGroup">
+        <label class="form-label">مالیات ($)</label>
+        <input class="form-input" id="scanTax" type="number" placeholder="0.00">
+      </div>
+      <div class="form-group" id="scanTotalGroup">
+        <label class="form-label">جمع کل ($)</label>
+        <input class="form-input" id="scanTotal" type="number" placeholder="0.00">
+      </div>
+      <div class="form-group" id="scanCategoryGroup">
+        <label class="form-label">دسته‌بندی</label>
+        <select class="form-input" id="scanCategory">
+          <optgroup label="🏠 مسکن">
+            <option value="rent">🏠 اجاره/مورتگیج</option>
+            <option value="electricity">💡 برق، آب، گاز</option>
+            <option value="internet">🌐 اینترنت</option>
+            <option value="phone">📱 تلفن</option>
+            <option value="home_repair">🔨 تعمیرات خانه</option>
+            <option value="furniture">🛋️ وسایل خانه</option>
+          </optgroup>
+          <optgroup label="🚗 ماشین">
+            <option value="fuel">⛽ بنزین</option>
+            <option value="maintenance">🔧 تعمیر ماشین</option>
+            <option value="car_insurance">🛡️ بیمه ماشین</option>
+            <option value="tire">🔄 لاستیک</option>
+            <option value="parking">🅿️ پارکینگ</option>
+            <option value="carwash">🚿 کارواش</option>
+            <option value="transit">🚌 حمل‌ونقل عمومی</option>
+            <option value="uber">🚗 Uber/Taxi</option>
+          </optgroup>
+          <optgroup label="🛒 خرید و غذا">
+            <option value="grocery">🛒 Grocery</option>
+            <option value="restaurant">🍽️ رستوران</option>
+            <option value="cafe">☕ کافه</option>
+            <option value="delivery">🛵 DoorDash/UberEats</option>
+          </optgroup>
+          <optgroup label="🏥 سلامت">
+            <option value="hospital">🏥 بیمارستان/کلینیک</option>
+            <option value="doctor">👨‍⚕️ دکتر</option>
+            <option value="dentist">🦷 دندانپزشک</option>
+            <option value="optometrist">👁️ چشم‌پزشک</option>
+            <option value="pharmacy">💊 دارو</option>
+            <option value="health_insurance">🛡️ بیمه سلامت</option>
+            <option value="gym">🏋️ باشگاه</option>
+            <option value="therapy">🧘 روانپزشک/مشاور</option>
+          </optgroup>
+          <optgroup label="👕 پوشاک">
+            <option value="clothing">👕 لباس و کفش</option>
+            <option value="salon">💇 آرایشگاه</option>
+            <option value="personal_care">🧴 بهداشت</option>
+          </optgroup>
+          <optgroup label="🎬 تفریح">
+            <option value="entertainment">🎬 سرگرمی</option>
+            <option value="streaming">📺 Netflix/Disney+</option>
+            <option value="music">🎵 Spotify/Music</option>
+            <option value="travel">✈️ سفر</option>
+            <option value="hotel">🏨 هتل</option>
+            <option value="games">🎮 بازی</option>
+          </optgroup>
+          <optgroup label="📚 تحصیل">
+            <option value="education">📚 مدرسه/دانشگاه</option>
+            <option value="books">📖 کتاب</option>
+            <option value="online_course">💻 دوره آنلاین</option>
+          </optgroup>
+          <optgroup label="🐾 حیوان خانگی">
+            <option value="pet_food">🐾 غذای حیوان</option>
+            <option value="vet">🏥 دامپزشک</option>
+          </optgroup>
+          <optgroup label="👶 بچه‌ها">
+            <option value="daycare">👶 Daycare/مهد</option>
+            <option value="school_supplies">🎒 لوازم مدرسه</option>
+            <option value="kids_activities">⚽ فعالیت بچه‌ها</option>
+            <option value="kids_clothing">👗 لباس بچه</option>
+          </optgroup>
+          <optgroup label="💼 کاری">
+            <option value="supplies">📦 مواد اولیه</option>
+            <option value="packaging">🎁 بسته‌بندی</option>
+            <option value="advertising">📢 تبلیغات</option>
+            <option value="equipment">🔧 تجهیزات</option>
+          </optgroup>
+          <optgroup label="🎁 متفرقه">
+            <option value="gift">🎁 هدیه</option>
+            <option value="charity">❤️ خیریه</option>
+            <option value="subscription">📦 اشتراک</option>
+            <option value="amazon">📦 خرید آنلاین</option>
+            <option value="other">📦 سایر</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">نوع</label>
+        <select class="form-input" id="scanExpType">
+          <option value="personal">🏠 شخصی</option>
+          <option value="business">💼 کاری (T2125)</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">یادداشت</label>
+        <input class="form-input" id="scanNote" placeholder="...">
+      </div>
+    </div>
+
+    <div id="scanItemsSection" style="margin-top:12px">
+      <div style="font-size:12px;font-weight:700;color:#0D3B7A;margin-bottom:8px">📋 اقلام خوانده شده:</div>
+      <div id="scanItemsList"></div>
+    </div>
+
+    <div id="scanPreviewImg" style="text-align:center;margin-top:12px"></div>
+
+    <div class="modal-actions">
+      <button class="btn btn-green" onclick="confirmScan()" style="flex:1">✅ تأیید و ذخیره</button>
+      <button class="btn btn-outline" onclick="closeScanModal()">❌ انصراف</button>
+    </div>
   </div>
 </div>
 
@@ -665,11 +815,13 @@
       <div class="settings-section">
         <div class="settings-title">📊 بودجه ماهانه</div>
         <div class="form-grid">
-          <div class="form-group"><label class="form-label">🍔 غذا ($)</label><input class="form-input" id="budget-food" type="number" placeholder="0"></div>
-          <div class="form-group"><label class="form-label">⛽ بنزین ($)</label><input class="form-input" id="budget-fuel" type="number" placeholder="0"></div>
-          <div class="form-group"><label class="form-label">🛒 خرید ($)</label><input class="form-input" id="budget-grocery" type="number" placeholder="0"></div>
-          <div class="form-group"><label class="form-label">🎬 سرگرمی ($)</label><input class="form-input" id="budget-entertainment" type="number" placeholder="0"></div>
+          <div class="form-group"><label class="form-label">🛒 خرید و غذا ($)</label><input class="form-input" id="budget-grocery" type="number" placeholder="0"></div>
+          <div class="form-group"><label class="form-label">🚗 ماشین ($)</label><input class="form-input" id="budget-fuel" type="number" placeholder="0"></div>
           <div class="form-group"><label class="form-label">🏥 سلامت ($)</label><input class="form-input" id="budget-health" type="number" placeholder="0"></div>
+          <div class="form-group"><label class="form-label">🎬 تفریح ($)</label><input class="form-input" id="budget-entertainment" type="number" placeholder="0"></div>
+          <div class="form-group"><label class="form-label">👕 پوشاک ($)</label><input class="form-input" id="budget-clothing" type="number" placeholder="0"></div>
+          <div class="form-group"><label class="form-label">👶 بچه‌ها ($)</label><input class="form-input" id="budget-kids" type="number" placeholder="0"></div>
+          <div class="form-group"><label class="form-label">🐾 حیوان خانگی ($)</label><input class="form-input" id="budget-pet" type="number" placeholder="0"></div>
           <div class="form-group"><label class="form-label">📦 سایر ($)</label><input class="form-input" id="budget-other" type="number" placeholder="0"></div>
         </div>
       </div>
@@ -987,14 +1139,31 @@ function renderDashboard(){
   if(hasBudget){
     const cats={};
     allExp.forEach(r=>{const c=r.category||'other';cats[c]=(cats[c]||0)+parseFloat(r.amount||0);});
-    const budgetKeys=['food','fuel','grocery','entertainment','health','other'];
+    // جمع دسته‌های مرتبط
+    const grouped={
+      grocery:(cats.grocery||0)+(cats.restaurant||0)+(cats.cafe||0)+(cats.delivery||0)+(cats.food||0),
+      fuel:(cats.fuel||0)+(cats.maintenance||0)+(cats.car_insurance||0)+(cats.tire||0)+(cats.parking||0)+(cats.carwash||0)+(cats.transit||0)+(cats.uber||0),
+      health:(cats.hospital||0)+(cats.doctor||0)+(cats.dentist||0)+(cats.optometrist||0)+(cats.pharmacy||0)+(cats.health_insurance||0)+(cats.gym||0)+(cats.therapy||0),
+      entertainment:(cats.entertainment||0)+(cats.streaming||0)+(cats.music||0)+(cats.travel||0)+(cats.hotel||0)+(cats.games||0),
+      clothing:(cats.clothing||0)+(cats.salon||0)+(cats.personal_care||0),
+      kids:(cats.daycare||0)+(cats.school_supplies||0)+(cats.kids_activities||0)+(cats.kids_clothing||0),
+      pet:(cats.pet_food||0)+(cats.vet||0)+(cats.pet_grooming||0),
+      other:(cats.gift||0)+(cats.charity||0)+(cats.subscription||0)+(cats.amazon||0)+(cats.other||0)
+    };
+    const budgetLabels={
+      grocery:'🛒 خرید و غذا',fuel:'🚗 ماشین',health:'🏥 سلامت',
+      entertainment:'🎬 تفریح',clothing:'👕 پوشاک',kids:'👶 بچه‌ها',
+      pet:'🐾 حیوان خانگی',other:'📦 سایر'
+    };
+    const budgetKeys=Object.keys(userProfile.budget||{});
     document.getElementById('dashBudget').innerHTML=budgetKeys.map(k=>{
       const b=parseFloat(userProfile.budget[k]||0);if(!b)return'';
-      const spent=cats[k]||0;const pct=Math.min((spent/b)*100,100);
+      const spent=grouped[k]!==undefined?grouped[k]:(cats[k]||0);
+      const pct=Math.min((spent/b)*100,100);
       const cls=pct>=100?'budget-over':pct>=80?'budget-warn':'budget-ok';
       return`<div style="margin-bottom:10px">
         <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
-          <span>${CAT_LABELS[k]||k}</span><span style="font-weight:700">$${spent.toFixed(0)} / $${b.toFixed(0)}</span>
+          <span>${budgetLabels[k]||CAT_LABELS[k]||k}</span><span style="font-weight:700;color:${pct>=100?'#E53935':pct>=80?'#F97316':'#0D3B7A'}">$${spent.toFixed(0)} / $${b.toFixed(0)}</span>
         </div>
         <div class="budget-bar"><div class="budget-fill ${cls}" style="width:${pct}%"></div></div>
       </div>`;
@@ -1007,6 +1176,92 @@ function renderDashboard(){
   const bd=document.getElementById('dashBreakdown');
   if(!Object.keys(cats).length){bd.innerHTML=`<div style="color:#AAA;font-size:13px;text-align:center;padding:14px">هنوز هزینه‌ای ثبت نشده</div>`;return;}
   bd.innerHTML=Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>`<div class="report-row"><div class="report-label"><span class="report-dot" style="background:${CAT_COLORS[cat]||'#546E7A'}"></span>${CAT_LABELS[cat]||cat}</div><div class="report-value">$${amt.toFixed(2)}</div></div>`).join('');
+}
+
+// ── SCAN MODAL ──
+let scanType='expense';
+let pendingDataUrl='';
+
+function setScanType(t){
+  scanType=t;
+  document.getElementById('scanTypeExpense').classList.toggle('active',t==='expense');
+  document.getElementById('scanTypeIncome').classList.toggle('active',t==='income');
+  const isExp=t==='expense';
+  document.getElementById('scanVendorLabel').textContent=isExp?'نام فروشگاه':'نام مشتری/شرکت';
+  document.getElementById('scanTaxGroup').style.display=isExp?'':'none';
+  document.getElementById('scanTotalGroup').style.display=isExp?'':'none';
+  document.getElementById('scanCategoryGroup').style.display=isExp?'':'none';
+  document.getElementById('scanExpType').parentElement.style.display=isExp?'':'none';
+  document.getElementById('scanAmountLabel').textContent=isExp?'مبلغ ($)':'مبلغ دریافتی ($)';
+}
+
+function showScanModal(data, dataUrl){
+  pendingDataUrl=dataUrl;
+  scanType='expense';
+  setScanType('expense');
+  document.getElementById('scanVendor').value=data.vendor||'';
+  document.getElementById('scanDate').value=data.date||new Date().toISOString().split('T')[0];
+  document.getElementById('scanAmount').value=data.amount||'';
+  document.getElementById('scanTax').value=data.tax||'0.00';
+  document.getElementById('scanTotal').value=data.total||data.amount||'';
+  document.getElementById('scanNote').value='';
+  // set category
+  const catEl=document.getElementById('scanCategory');
+  if(data.category){
+    const opt=[...catEl.options].find(o=>o.value===data.category);
+    if(opt)catEl.value=data.category;
+  }
+  // items
+  const itemsList=document.getElementById('scanItemsList');
+  const itemsSection=document.getElementById('scanItemsSection');
+  if(data.items&&data.items.length){
+    itemsSection.style.display='block';
+    itemsList.innerHTML=data.items.map(it=>`
+      <div class="receipt-item ${it.type==='business'?'business':'personal'}" style="margin-bottom:4px">
+        <span class="item-name">${it.name}</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="item-type-badge ${it.type==='business'?'badge-biz':'badge-personal'}">${it.type==='business'?'💼 کاری':'🏠 شخصی'}</span>
+          <span class="item-price">$${parseFloat(it.price||0).toFixed(2)}</span>
+        </div>
+      </div>`).join('');
+  }else{
+    itemsSection.style.display='none';
+  }
+  // preview image
+  document.getElementById('scanPreviewImg').innerHTML=dataUrl?`<img src="${dataUrl}" style="max-width:100%;max-height:150px;border-radius:8px;opacity:.8;margin-top:8px">`:'';
+  document.getElementById('scanModal').classList.add('show');
+}
+
+function closeScanModal(){
+  document.getElementById('scanModal').classList.remove('show');
+  pendingDataUrl='';
+}
+
+async function confirmScan(){
+  const vendor=document.getElementById('scanVendor').value.trim();
+  const date=document.getElementById('scanDate').value;
+  const amount=document.getElementById('scanAmount').value;
+  if(!vendor||!date||!amount){alert('لطفاً نام، تاریخ و مبلغ را وارد کنید');return;}
+
+  if(scanType==='income'){
+    // ذخیره به عنوان درآمد
+    const ni={id:Date.now(),title:vendor,amount:parseFloat(amount).toFixed(2),date,type:'other',note:document.getElementById('scanNote').value||'📷 اسکن رسید',user_id:currentUser.id};
+    incomes.unshift(ni);
+    if(!currentUser.isDemo)await sb.from('incomes').insert(ni);else saveLocal();
+  }else{
+    // ذخیره به عنوان هزینه
+    const tax=document.getElementById('scanTax').value||'0.00';
+    const total=document.getElementById('scanTotal').value||amount;
+    const nr={id:Date.now(),vendor,date,amount:parseFloat(amount).toFixed(2),tax:parseFloat(tax).toFixed(2),total:parseFloat(total).toFixed(2),category:document.getElementById('scanCategory').value,type:document.getElementById('scanExpType').value,img:pendingDataUrl,source:'scan',note:document.getElementById('scanNote').value,user_id:currentUser.id};
+    receipts.unshift(nr);
+    if(!currentUser.isDemo){const{img,...noImg}=nr;await sb.from('receipts').insert(noImg);}else saveLocal();
+  }
+
+  showSync();
+  closeScanModal();
+  renderReceipts();
+  renderIncomes();
+  renderDashboard();
 }
 
 // ── RECEIPTS ──
@@ -1045,12 +1300,9 @@ async function processFile(file){
       box.textContent='⚠️ این رسید قبلاً ثبت شده!';box.classList.remove('hidden');return;
     }
 
+    // نشون دادن modal تأیید
     const dataUrl='data:'+mimeType+';base64,'+base64;
-    const nr={id:Date.now(),...data,img:dataUrl,source:'scan',user_id:currentUser.id};
-    receipts.unshift(nr);
-    if(!currentUser.isDemo){const{img,...noImg}=nr;await sb.from('receipts').insert(noImg);}
-    else saveLocal();
-    showSync();renderReceipts();renderDashboard();
+    showScanModal(data, dataUrl);
     document.getElementById('errorBox').classList.add('hidden');
   }catch(err){
     const box=document.getElementById('errorBox');box.textContent='⚠️ '+err.message;box.classList.remove('hidden');
@@ -1285,7 +1537,7 @@ function loadSettingsForm(){
   document.getElementById('set-bizname').value=userProfile.bizName||'';
   document.getElementById('set-biztype').value=userProfile.bizType||'';
   document.getElementById('set-bizdesc').value=userProfile.bizDesc||'';
-  ['food','fuel','grocery','entertainment','health','other'].forEach(k=>{
+  ['grocery','fuel','health','entertainment','clothing','kids','pet','other'].forEach(k=>{
     const el=document.getElementById('budget-'+k);
     if(el)el.value=userProfile.budget[k]||'';
   });
@@ -1301,8 +1553,10 @@ async function saveSettings(){
   userProfile.bizType=document.getElementById('set-biztype').value;
   userProfile.bizDesc=document.getElementById('set-bizdesc').value.trim();
   userProfile.budget={};
-  ['food','fuel','grocery','entertainment','health','other'].forEach(k=>{
-    const v=parseFloat(document.getElementById('budget-'+k).value||0);
+  ['grocery','fuel','health','entertainment','clothing','kids','pet','other'].forEach(k=>{
+    const el=document.getElementById('budget-'+k);
+    if(!el)return;
+    const v=parseFloat(el.value||0);
     if(v>0)userProfile.budget[k]=v;
   });
   if(!currentUser.isDemo){

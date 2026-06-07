@@ -567,9 +567,9 @@
       <div class="upload-area">
         <div id="uploadContent" style="text-align:center">
           <div style="font-size:38px;margin-bottom:8px">📷</div>
-          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-            <button class="btn btn-green" onclick="event.stopPropagation();document.getElementById('fileInput').click()">🖼️ آپلود عکس/PDF</button>
-            <button class="btn btn-blue" onclick="event.stopPropagation();document.getElementById('cameraInput').click()">📷 دوربین</button>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:6px">
+            <button class="btn btn-green" onclick="document.getElementById('fileInput').click()">🖼️ آپلود عکس/PDF</button>
+            <button class="btn btn-blue" onclick="document.getElementById('cameraInput').click()">📷 دوربین</button>
           </div>
           <div style="color:#AAA;font-size:12px;margin-top:6px">drag & drop هم کار میکنه</div>
         </div>
@@ -581,6 +581,7 @@
         </div>
       </div>
       <input type="file" id="fileInput" accept="image/*,application/pdf" class="hidden" onchange="processFile(event.target.files[0])">
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="processFile(event.target.files[0])">
       <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="processFile(event.target.files[0])">
       <div class="error-box hidden" id="errorBox"></div>
       <div class="section-header">

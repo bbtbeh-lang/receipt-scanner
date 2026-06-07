@@ -302,6 +302,9 @@
         </div>
       </div>
       <button class="login-btn" onclick="handleAuth()" id="authBtn">ورود</button>
+      <div id="forgotRow" style="text-align:center;margin-top:4px">
+        <button onclick="showForgotPassword()" style="background:none;border:none;color:#1565C0;font-size:12px;cursor:pointer;font-family:inherit">فراموشی رمز عبور؟</button>
+      </div>
       <div class="login-divider" id="orText">یا</div>
       <button class="login-btn login-btn-blue" onclick="loginDemo()" id="demoBtn">🚀 ورود آزمایشی</button>
     </div>
@@ -444,6 +447,23 @@
     <div class="modal-actions">
       <button class="btn btn-green" onclick="confirmScan()" style="flex:1">✅ تأیید و ذخیره</button>
       <button class="btn btn-outline" onclick="closeScanModal()">❌ انصراف</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ FORGOT PASSWORD MODAL ══════════════ -->
+<div class="modal-overlay" id="forgotModal">
+  <div class="modal-card" style="max-width:380px">
+    <div class="modal-title">🔑 فراموشی رمز عبور</div>
+    <div class="modal-sub">ایمیلت رو وارد کن تا لینک تغییر رمز برات بفرستیم</div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label">ایمیل</label>
+      <input class="form-input" type="email" id="forgotEmail" placeholder="ایمیل شما">
+    </div>
+    <div id="forgotMsg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-green" onclick="sendForgotPassword()" style="flex:1">📧 ارسال لینک</button>
+      <button class="btn btn-outline" onclick="closeForgotModal()">انصراف</button>
     </div>
   </div>
 </div>
@@ -928,6 +948,7 @@ function switchTab(tab){
   document.getElementById('nameField').classList.toggle('hidden',tab==='login');
   document.getElementById('modeField').classList.toggle('hidden',tab==='login');
   document.getElementById('authBtn').textContent=tab==='login'?'ورود':'ثبت‌نام';
+  document.getElementById('forgotRow').style.display=tab==='login'?'block':'none';
 }
 
 function toggleLoginLang(){
@@ -954,6 +975,34 @@ async function handleAuth(){
     const{data,error}=await sb.auth.signInWithPassword({email,password:pass});
     if(error){showMsg('error','ایمیل یا رمز اشتباه است');return;}
     await initUser(data.user);
+  }
+}
+
+function showForgotPassword(){
+  const emailEl=document.getElementById('emailInput');
+  if(emailEl.value)document.getElementById('forgotEmail').value=emailEl.value;
+  document.getElementById('forgotMsg').textContent='';
+  document.getElementById('forgotModal').classList.add('show');
+}
+
+function closeForgotModal(){
+  document.getElementById('forgotModal').classList.remove('show');
+}
+
+async function sendForgotPassword(){
+  const email=document.getElementById('forgotEmail').value.trim();
+  if(!email){
+    document.getElementById('forgotMsg').innerHTML='<div class="login-msg error">لطفاً ایمیل را وارد کنید</div>';
+    return;
+  }
+  const{error}=await sb.auth.resetPasswordForEmail(email,{
+    redirectTo:window.location.origin
+  });
+  if(error){
+    document.getElementById('forgotMsg').innerHTML=`<div class="login-msg error">${error.message}</div>`;
+  }else{
+    document.getElementById('forgotMsg').innerHTML='<div class="login-msg success">✅ لینک تغییر رمز به ایمیلت فرستاده شد! Spam رو هم چک کن.</div>';
+    setTimeout(()=>closeForgotModal(),3000);
   }
 }
 

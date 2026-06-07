@@ -1134,7 +1134,7 @@ function applyRecurring(){
   recurringItems.forEach(r=>{
     if(!r.active)return;
     if(!manualExpenses.some(e=>e.recurring_id===r.id&&e.date&&e.date.startsWith(ym))){
-      const ne={id:Date.now()+Math.random(),title:r.title,amount:r.amount,date:`${ym}-${String(r.day||1).padStart(2,'0')}`,category:r.category,type:r.type,note:'🔄 Auto',recurring_id:r.id,source:'recurring',user_id:currentUser.id};
+      const ne={id:Math.floor(Date.now()+Math.random()*1000),title:r.title,amount:r.amount,date:`${ym}-${String(r.day||1).padStart(2,'0')}`,category:r.category,type:r.type,note:'🔄 Auto',recurring_id:r.id,source:'recurring',user_id:currentUser.id};
       manualExpenses.unshift(ne);
       if(!currentUser.isDemo)sb.from('expenses').insert(ne);
     }
@@ -1294,14 +1294,14 @@ async function confirmScan(){
 
   if(scanType==='income'){
     // ذخیره به عنوان درآمد
-    const ni={id:Date.now(),title:vendor,amount:parseFloat(amount).toFixed(2),date,type:'other',note:document.getElementById('scanNote').value||'📷 اسکن رسید',user_id:currentUser.id};
+    const ni={id:Math.floor(Date.now()),title:vendor,amount:parseFloat(amount).toFixed(2),date,type:'other',note:document.getElementById('scanNote').value||'📷 اسکن رسید',user_id:currentUser.id};
     incomes.unshift(ni);
     if(!currentUser.isDemo)await sb.from('incomes').insert(ni);else saveLocal();
   }else{
     // ذخیره به عنوان هزینه
     const tax=document.getElementById('scanTax').value||'0.00';
     const total=document.getElementById('scanTotal').value||amount;
-    const nr={id:Date.now(),vendor,date,amount:parseFloat(amount).toFixed(2),tax:parseFloat(tax).toFixed(2),total:parseFloat(total).toFixed(2),category:document.getElementById('scanCategory').value,type:document.getElementById('scanExpType').value,img:pendingDataUrl,source:'scan',note:document.getElementById('scanNote').value,user_id:currentUser.id};
+    const nr={id:Math.floor(Date.now()),vendor,date,amount:parseFloat(amount).toFixed(2),tax:parseFloat(tax).toFixed(2),total:parseFloat(total).toFixed(2),category:document.getElementById('scanCategory').value,type:document.getElementById('scanExpType').value,img:pendingDataUrl,source:'scan',note:document.getElementById('scanNote').value,user_id:currentUser.id};
     receipts.unshift(nr);
     if(!currentUser.isDemo){const{img,...noImg}=nr;await sb.from('receipts').insert(noImg);}else saveLocal();
   }

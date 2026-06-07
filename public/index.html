@@ -564,11 +564,14 @@
     <!-- RECEIPTS -->
     <div id="page-receipts" class="page">
       <div class="page-header"><div><div class="page-title">رسیدها</div><div class="page-sub">عکس یا PDF رسید آپلود کن</div></div></div>
-      <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+      <div class="upload-area">
         <div id="uploadContent" style="text-align:center">
           <div style="font-size:38px;margin-bottom:8px">📷</div>
-          <button class="btn btn-green">آپلود رسید / Upload</button>
-          <div style="color:#AAA;font-size:12px;margin-top:6px">عکس یا PDF — drag & drop</div>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-green" onclick="event.stopPropagation();document.getElementById('fileInput').click()">🖼️ آپلود عکس/PDF</button>
+            <button class="btn btn-blue" onclick="event.stopPropagation();document.getElementById('cameraInput').click()">📷 دوربین</button>
+          </div>
+          <div style="color:#AAA;font-size:12px;margin-top:6px">drag & drop هم کار میکنه</div>
         </div>
         <div id="loadingContent" class="hidden" style="text-align:center">
           <div style="display:flex;align-items:center;gap:10px;justify-content:center">
@@ -578,6 +581,7 @@
         </div>
       </div>
       <input type="file" id="fileInput" accept="image/*,application/pdf" class="hidden" onchange="processFile(event.target.files[0])">
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="processFile(event.target.files[0])">
       <div class="error-box hidden" id="errorBox"></div>
       <div class="section-header">
         <span class="section-title">رسیدهای ثبت شده</span>
